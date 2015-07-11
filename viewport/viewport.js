@@ -9,7 +9,7 @@ var MVP;
 var camPos;
 var lookAtPos;
 var program;
-var MOVEMENT_SPEED = 0.001;
+var MOVEMENT_SPEED = 0.0005;
 var ROTATION_SPEED = 0.1;
 var triangleB;
 var gridData = [];
@@ -183,15 +183,21 @@ function camera_rotate(x,y)
     var tempPos = subtract(camPos, lookAtPos);
     
     //y rot
-    var rotMat = rotate( dx*ROTATION_SPEED, vec3(0,1,0));
-    console.log(rotMat);
-    
+    var rotMat = rotate( -dx*ROTATION_SPEED, vec3(0,1,0));
     var tempPosM = mat4();
     tempPosM[3][0] = tempPos[0];
     tempPosM[3][1] = tempPos[1];
     tempPosM[3][2] = tempPos[2];
     var res = mult(tempPosM,rotMat);
-    camPos = add(vec3(res[3][0],res[3][1],res[3][2]),lookAtPos);
+    //rotation on x axis
+    tempPos = vec3(res[3][0],res[3][1],res[3][2])
+    var xVec = normalize(cross(vec3(0,1,0),tempPos));
+    rotMat = rotate(-dy*ROTATION_SPEED, vec3(xVec[0],xVec[1],xVec[2]));
+    res = mult(res,rotMat);
+    
+    
+    camPos = add(vec3(res[3][0],res[3][1],res[3][2])
+,lookAtPos);
 }
 
 
