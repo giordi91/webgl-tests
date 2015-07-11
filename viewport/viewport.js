@@ -13,17 +13,17 @@ var triangleB;
 var gridData = [];
 var gridB;
 var camera ;
-
+var mesh_loaded;
 var meshes = {};
-function dummy()
+function loaded_obj()
 {
-    console.log(meshes);
+    console.log("obj_loaded");
 }
 window.onload = function init()
 {
-    
+    mesh_loaded = false; 
     camera = Camera();
-    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/cube.obj"},dummy,meshes);
+    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/cube.obj"},loaded_obj,meshes);
     
     //setting up the webgl window, mostly mouse triggers
     canvas.oncontextmenu = function () {return false;};
@@ -55,10 +55,11 @@ window.onload = function init()
     gl.useProgram( program );
     
     // Load the data into the GPU
+    /*
     triangleB = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, triangleB);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
-
+    */
     // Associate out shader variables with our data buffer
 
 
@@ -117,15 +118,17 @@ function render() {
     gl.uniformMatrix4fv(loc,false,flatten(MVP));
 
     //draw triangle
+    
     loc = gl.getUniformLocation(program, "color");
     gl.uniform4fv(loc,flatten(vec4(1,0,0,1)));
 
+    /*
     gl.bindBuffer(gl.ARRAY_BUFFER,triangleB);
     var vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
     gl.drawArrays( gl.TRIANGLES, 0, 3 );
-     
+    */ 
     //draw grid 
     loc = gl.getUniformLocation(program, "color");
     gl.uniform4fv(loc,flatten(vec4(1,1,1,1)));
