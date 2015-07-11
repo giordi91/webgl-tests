@@ -11,7 +11,7 @@ uniform mat4 projM;
 void
 main()
 {
-    gl_Position =  projM* ModelViewM* vec4(vPosition,  1.0);
+    gl_Position =  MVP* vec4(vPosition,  1.0);
 }
 </script>
 
@@ -30,6 +30,7 @@ main()
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/flatten.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="../Common/webgl-obj-loader/webgl-obj-loader.js"></script>
 <script type="text/javascript" src="viewport.js"></script>
 </head>
 

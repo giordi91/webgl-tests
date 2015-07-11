@@ -1,3 +1,6 @@
 [submodule "Common/three.js"]
 	path = Common/three.js
 	url = https://github.com/mrdoob/three.js.git
+[submodule "Common/webgl-obj-loader"]
+	path = Common/webgl-obj-loader
+	url = https://github.com/frenchtoast747/webgl-obj-loader.git

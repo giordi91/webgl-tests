@@ -1,3 +1,5 @@
+//I KNOW , don't think I DONT KNOW IT, but I truly do, all those globals are ugly
+//as shit, as soon I get better at javasctipt I am gonna do something about this
 var gl;
 var points;
 var mouse_down= 0;
@@ -14,9 +16,19 @@ var ROTATION_SPEED = 0.1;
 var triangleB;
 var gridData = [];
 var gridB;
+var camera ;
 
+var meshes = {};
+function dummy()
+{
+    console.log(meshes);
+}
 window.onload = function init()
 {
+    
+    camera = maka_camera();
+    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/cube.obj"},dummy,meshes);
+    
     //setting up the webgl window, mostly mouse triggers
     canvas.oncontextmenu = function () {return false;};
     canvas.onmousedown= function(e) { 
@@ -54,7 +66,8 @@ window.onload = function init()
     // Associate out shader variables with our data buffer
 
 
-    //grid data
+    //grid data this is a temp solution until i find a better way to organize
+    //data in javascript
     for(i=-5; i<6; i++)
     {
        gridData.push(-5); 
@@ -83,8 +96,6 @@ window.onload = function init()
     gl.bufferData( gl.ARRAY_BUFFER, flatten(gridData), gl.STATIC_DRAW );
 
     // Associate out shader variables with our data buffer
-    //var vPosition = gl.getAttribLocation( program, "vPosition" );
-    //gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
     gl.enable(gl.DEPTH_TEST);
     render();
 };
@@ -96,7 +107,7 @@ function render() {
     
     
     //camera matrix
-    projM = perspective(30, canvas.width/canvas.height, 0.1,100);
+    projM = perspective(30, canvas.width/canvas.height, 0.1,10000);
     var loc = gl.getUniformLocation(program, "projM");
     gl.uniformMatrix4fv(loc,false,flatten(projM));
     
@@ -139,16 +150,16 @@ function mouse_move_event(e)
         //just chekcing the mnove delta
         if (e.button == 1)
         {
-            camera_move(e.pageX, e.pageY);
+            camera.camera_move(e.pageX, e.pageY);
         }
         
         if (e.button == 0)
         {
-            camera_rotate(e.pageX, e.pageY);
+            camera.camera_rotate(e.pageX, e.pageY);
         }
         if (e.button ==2)
         {
-            camera_zoom(e.pageX, e.pageY);
+            camera.camera_zoom(e.pageX, e.pageY);
         }
         
         //updating stored coordinate for computing delta
@@ -198,9 +209,7 @@ function camera_rotate(x,y)
     rotMat = rotate(-dy*ROTATION_SPEED, vec3(xVec[0],xVec[1],xVec[2]));
     res = mult(res,rotMat);
     
-    
-    camPos = add(vec3(res[3][0],res[3][1],res[3][2])
-,lookAtPos);
+    camPos = add(vec3(res[3][0],res[3][1],res[3][2]) ,lookAtPos);
 }
 
 function camera_zoom(x,y)
@@ -224,4 +233,17 @@ function camera_zoom(x,y)
     value = scale(delta,value);
     //updating mouse positon
     camPos = add(value,camPos);  
+}
+
+function maka_camera()
+{
+    var camera = {};
+    camera.camera_zoom = camera_zoom;
+    camera.camera_rotate = camera_rotate;
+    camera.camera_move = camera_move;
+    camera.old_x = 0;
+    camera.old_y = 0;
+    return camera;
+
+
 }
