@@ -15,15 +15,47 @@ var gridB;
 var camera ;
 var mesh_loaded;
 var meshes = {};
+//temp variables for obj loaded
+var vbo;
+var nbo;
+var idxbo;
+var uvbo;
+var vtx_size;
+var idx_size;
 function loaded_obj()
 {
-    console.log("obj_loaded");
+    console.log(meshes["cube"]);
+    vbo = gl.createBuffer();
+    nbo = gl.createBuffer();
+    idxbo = gl.createBuffer();
+    uvbo = gl.createBuffer();
+    
+    var m = meshes["cube"];
+    gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
+    gl.bufferData(gl.ARRAY_BUFFER,flatten(m.vertices),gl.STATIC_DRAW);
+    vtx_size = m.vertices.length;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER,nbo);
+    gl.bufferData(gl.ARRAY_BUFFER,flatten(m.vertexNormals),gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxbo);
+    idx_size = m.indices.length;
+    var idxs = new Uint16Array(idx_size);
+    for(i=0; i<idx_size;i++)
+    {
+        idxs[i] = m.indices[i];
+    }
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idxs,gl.STATIC_DRAW)
+    gl.bindBuffer(gl.ARRAY_BUFFER,uvbo);
+    gl.bufferData(gl.ARRAY_BUFFER,flatten(m.textures),gl.STATIC_DRAW);
+
+    mesh_loaded = true;
 }
 window.onload = function init()
 {
     mesh_loaded = false; 
     camera = Camera();
-    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/cube.obj"},loaded_obj,meshes);
+    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body.obj"},loaded_obj,meshes);
     
     //setting up the webgl window, mostly mouse triggers
     canvas.oncontextmenu = function () {return false;};
@@ -122,6 +154,18 @@ function render() {
     loc = gl.getUniformLocation(program, "color");
     gl.uniform4fv(loc,flatten(vec4(1,0,0,1)));
 
+    if (mesh_loaded)
+    {
+        gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
+        var vPosition = gl.getAttribLocation( program, "vPosition" );
+        gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
+        gl.enableVertexAttribArray( vPosition );
+
+        //gl.drawArrays( gl.TRIANGLES, 0, 20 );
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxbo);
+        gl.drawElements(gl.TRIANGLES,idx_size, gl.UNSIGNED_SHORT,0);
+    }
+    
     /*
     gl.bindBuffer(gl.ARRAY_BUFFER,triangleB);
     var vPosition = gl.getAttribLocation( program, "vPosition" );

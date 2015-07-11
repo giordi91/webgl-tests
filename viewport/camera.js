@@ -78,7 +78,7 @@ function Camera()
     //those two should be constant, probalby I shoudl have a getter 
     //and no setter for this, but for now I leave it like this
     camera.MOVEMENT_SPEED = 0.0005;
-    camera.ROTATION_SPEED = 0.1;
+    camera.ROTATION_SPEED = 0.4;
     return camera;
 
 
