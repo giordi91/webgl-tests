@@ -2,12 +2,16 @@
 <html>
 <head>
 <script id="vertex-shader" type="x-shader/x-vertex">
-attribute vec2 vPosition;
+attribute vec3 vPosition;
+
+uniform mat4 ModelViewM;
+uniform mat4 MVP;
+uniform mat4 projM;
 
 void
 main()
 {
-    gl_Position = vec4(vPosition, 0.0, 1.0);
+    gl_Position =  projM* ModelViewM* vec4(vPosition,  1.0);
 }
 </script>
 
@@ -24,16 +28,17 @@ main()
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/flatten.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="viewport.js"></script>
 </head>
 
 <body >
 <script id="gl-canvas" type="text/javascript">
-var h = window.innerHeight, w = window.innerWidth;
+var h = window.innerHeight - 20, w = window.innerWidth -20;
 var canvas = document.createElement("canvas");
 canvas.height = h;
 canvas.width = w;
 document.body.appendChild(canvas);
 </script>
 </body>
-</html>
+</html>     
