@@ -110,7 +110,6 @@ function render() {
     gl.uniformMatrix4fv(loc,false,flatten(MVP));
 
     //draw triangle
-      
     loc = gl.getUniformLocation(program, "color");
     gl.uniform4fv(loc,flatten(vec4(1,0,0,1)));
 
@@ -146,6 +145,10 @@ function mouse_move_event(e)
         if (e.button == 0)
         {
             camera_rotate(e.pageX, e.pageY);
+        }
+        if (e.button ==2)
+        {
+            camera_zoom(e.pageX, e.pageY);
         }
         
         //updating stored coordinate for computing delta
@@ -200,4 +203,25 @@ function camera_rotate(x,y)
 ,lookAtPos);
 }
 
+function camera_zoom(x,y)
+{
+    var dx = old_x - x;
+    var dy = old_y - y;
 
+    var zoom_dir = subtract(camPos, lookAtPos);
+    var value = scale(MOVEMENT_SPEED, zoom_dir);
+    //in order to not limit the scale on one axis we get the axis with max displacement
+    //in absolute value;Need to chec if there is a condiction similar to c++ like conidiont ? val : val 
+    if (Math.abs(dx) > Math.abs(dy))
+    {
+        var delta = dx;
+    }
+    else
+    {
+        var delta = dy;
+    }
+    //scaling the zoom by the amount from the mouse
+    value = scale(delta,value);
+    //updating mouse positon
+    camPos = add(value,camPos);  
+}
