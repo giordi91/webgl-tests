@@ -3,7 +3,6 @@
 var gl;
 var mouse_down= 0;
 var program;
-var triangleB;
 var gridData = [];
 var gridB;
 var camera ;
@@ -50,10 +49,12 @@ window.onload = function init()
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
     OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body.obj"},loaded_obj,meshes);
+    //OBJ.downloadMeshes({"cube":"objs/body.obj"},loaded_obj,meshes);
     
     //setting up the webgl window, mostly mouse triggers
     canvas.oncontextmenu = function () {return false;};
     canvas.onmousedown= function(e) { 
+                                        console.log("down");
                                         camera.old_x = e.pageX;
                                         camera.old_y = e.pageY;
                                     mouse_down=true;};
@@ -120,11 +121,23 @@ function render() {
     loc = gl.getUniformLocation(program, "MVP");
     gl.uniformMatrix4fv(loc,false,flatten(MVP));
 
+    var NormalM= camera.normal_matrix();
+    loc = gl.getUniformLocation(program, "NormalM");
+    gl.uniformMatrix3fv(loc,false,flatten(NormalM));
     //draw triangle
     
     loc = gl.getUniformLocation(program, "color");
     gl.uniform4fv(loc,flatten(vec4(1,0,0,1)));
 
+    loc = gl.getUniformLocation(program, "K");
+    gl.uniform3fv(loc,flatten(vec3(0.6,0.6,0.6)));
+    
+    loc = gl.getUniformLocation(program, "shiness");
+    gl.uniform1f(loc,13.0);
+    
+    loc = gl.getUniformLocation(program, "lightPosition");
+    gl.uniform3fv(loc,flatten(vec3(0,0,0)));
+    
     if (mesh_loaded)
     {
         gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
@@ -132,9 +145,17 @@ function render() {
         gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( vPosition );
 
-        //gl.drawArrays( gl.TRIANGLES, 0, 20 );
+        
+        
+        
+        gl.bindBuffer(gl.ARRAY_BUFFER, nbo);
+        var vNormal = gl.getAttribLocation( program, "VertexNormal" );
+        gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
+        gl.enableVertexAttribArray( vNormal );
+         
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxbo);
         gl.drawElements(gl.TRIANGLES,idx_size, gl.UNSIGNED_SHORT,0);
+        gl.disableVertexAttribArray(vNormal);
     }
     
     //draw grid 
@@ -155,16 +176,16 @@ function mouse_move_event(e)
     if(mouse_down)
     {
         //just chekcing the mnove delta
-        if (e.button == 1)
+        if (e.buttons== 4)
         {
             camera.move(e.pageX, e.pageY);
         }
         
-        if (e.button == 0)
+        if (e.buttons == 1)
         {
             camera.rotate(e.pageX, e.pageY);
         }
-        if (e.button ==2)
+        if (e.buttons ==2)
         {
             camera.zoom(e.pageX, e.pageY);
         }
@@ -172,6 +193,8 @@ function mouse_move_event(e)
         //updating stored coordinate for computing delta
         camera.old_x = e.pageX;
         camera.old_y = e.pageY;
+
     }
+
 }
 

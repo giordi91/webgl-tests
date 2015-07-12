@@ -100,6 +100,18 @@ function Camera(width, height)
         return lookAt(this.eye, this.pivot, vec3(0,1,0));
     }
 
-
+    this.normal_matrix = function()
+    {
+        var mv = this.model_view_matrix();
+        var nm = mat3();
+        for(r=0; r<3;r++)
+        {
+            for (c=0; c<3;c++)
+            {
+                nm[r][c] = mv[r][c];
+            }
+        }
+        return nm;
+    }
 
 }
