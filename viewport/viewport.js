@@ -1,13 +1,7 @@
 //I KNOW , don't think I DONT KNOW IT, but I truly do, all those globals are ugly
 //as shit, as soon I get better at javasctipt I am gonna do something about this
 var gl;
-var points;
 var mouse_down= 0;
-var projM;
-var ModelViewM;
-var MVP;
-var camPos;
-var lookAtPos;
 var program;
 var triangleB;
 var gridData = [];
@@ -54,7 +48,7 @@ function loaded_obj()
 window.onload = function init()
 {
     mesh_loaded = false; 
-    camera = Camera();
+    camera = new Camera(canvas.width, canvas.height);
     OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body.obj"},loaded_obj,meshes);
     
     //setting up the webgl window, mostly mouse triggers
@@ -69,32 +63,15 @@ window.onload = function init()
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
-    
-    //temp data
-    var vertices = [-5, -5,0,
-                     0, 5,0,
-                     5, -5, 0];
-
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.6, 0.6, 0.6, 1.0 );
     
     
-    camPos = vec3(10,10,50); 
-    lookAtPos = vec3(0,0,0);
     //  Load shaders and initialize attribute buffers
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
     
-    // Load the data into the GPU
-    /*
-    triangleB = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, triangleB);
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
-    */
-    // Associate out shader variables with our data buffer
-
-
     //grid data this is a temp solution until i find a better way to organize
     //data in javascript
     for(i=-5; i<6; i++)
@@ -116,9 +93,6 @@ window.onload = function init()
        gridData.push(5); 
     }
     
-    for(i=-5; i<6; i++)
-    {
-    }
     // Load the data into the GPU
     gridB = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, gridB);
@@ -132,20 +106,17 @@ window.onload = function init()
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
-
-    
     
     //camera matrix
-    projM = perspective(30, canvas.width/canvas.height, 0.1,10000);
+    var projM = camera.projection_matrix(); 
     var loc = gl.getUniformLocation(program, "projM");
     gl.uniformMatrix4fv(loc,false,flatten(projM));
     
-    var up = vec3(0,1,0);
-    ModelViewM= lookAt(camPos,lookAtPos,up);
+    var ModelViewM= camera.model_view_matrix();
     loc = gl.getUniformLocation(program, "ModelViewM");
     gl.uniformMatrix4fv(loc,false,flatten(ModelViewM));
     
-    MVP= mult(projM,ModelViewM);
+    var MVP= mult(projM,ModelViewM);
     loc = gl.getUniformLocation(program, "MVP");
     gl.uniformMatrix4fv(loc,false,flatten(MVP));
 
@@ -166,13 +137,6 @@ function render() {
         gl.drawElements(gl.TRIANGLES,idx_size, gl.UNSIGNED_SHORT,0);
     }
     
-    /*
-    gl.bindBuffer(gl.ARRAY_BUFFER,triangleB);
-    var vPosition = gl.getAttribLocation( program, "vPosition" );
-    gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vPosition );
-    gl.drawArrays( gl.TRIANGLES, 0, 3 );
-    */ 
     //draw grid 
     loc = gl.getUniformLocation(program, "color");
     gl.uniform4fv(loc,flatten(vec4(1,1,1,1)));
@@ -193,16 +157,16 @@ function mouse_move_event(e)
         //just chekcing the mnove delta
         if (e.button == 1)
         {
-            camera.camera_move(e.pageX, e.pageY);
+            camera.move(e.pageX, e.pageY);
         }
         
         if (e.button == 0)
         {
-            camera.camera_rotate(e.pageX, e.pageY);
+            camera.rotate(e.pageX, e.pageY);
         }
         if (e.button ==2)
         {
-            camera.camera_zoom(e.pageX, e.pageY);
+            camera.zoom(e.pageX, e.pageY);
         }
         
         //updating stored coordinate for computing delta
