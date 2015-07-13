@@ -50,6 +50,11 @@ window.onload = function init()
     camera = new Camera(canvas.width, canvas.height);
     //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
     OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
+      
+        
+     
+    if(typeof window.orientation !== 'undefined'){
+    
         var hammertime = new Hammer(canvas);
         hammertime.on('pan', swipe_event );
         hammertime.on('panstart', function()
@@ -68,17 +73,12 @@ window.onload = function init()
                     camera.old_x = 0;
                     camera.old_y = 0;
                 } );
-        //hammertime.on('rotate', pinch_event);
+        hammertime.on('rotate', pinch_event);
         hammertime.on('pinchin', pan_event);
         hammertime.on('pinchout', pan_event);
-        camera.ZOOM_SPEED = 0.000001;
 
 hammertime.get('rotate').set({ enable: true });
-
-hammertime.get('pinch').set({ enable: true });
-   
-    if(typeof window.orientation !== 'undefined'){
-    
+hammertime.get('pinch').set({ enable: true, pointers: 3 });
         
     }    
     else
@@ -166,7 +166,7 @@ function render() {
     gl.uniform3fv(loc,flatten(vec3(0.6,0.6,0.6)));
     
     loc = gl.getUniformLocation(program, "shiness");
-    gl.uniform1f(loc,13.0);
+    gl.uniform1f(loc,100.0);
     
     loc = gl.getUniformLocation(program, "lightPosition");
     gl.uniform3fv(loc,flatten(vec3(0,0,0)));
@@ -202,7 +202,6 @@ function render() {
 
 function mouse_move_event(e)
 {
-    console.log(e);
     //we are going to evaluate only if we have the mouse down and we are moving
     if(mouse_down)
     {
@@ -232,6 +231,14 @@ function mouse_move_event(e)
 
 function swipe_event(e)
 {
+    var le = length(vec2(e.deltaX-camera.old_x, e.deltaY - camera.old_y));
+    if (le >30)
+    {
+        console.log("blocking rot");
+        camera.old_x = e.deltaX;
+        camera.old_y = e.deltaY;
+        return;
+    }
     camera.rotate(e.deltaX,e.deltaY);
     camera.old_x = e.deltaX;
     camera.old_y = e.deltaY;
@@ -240,6 +247,7 @@ function swipe_event(e)
 function pan_event(e)
 {
 
+    
     camera.move(e.deltaX,e.deltaY);
     camera.old_x = e.deltaX;
     camera.old_y = e.deltaY;
@@ -248,8 +256,12 @@ function pan_event(e)
 
 function pinch_event(e)
 {
-    camera.zoom(e.angle/10,e.angle/10);
-    camera.old_x = e.angle/10;
-    camera.old_y = e.angle/10;
+    if (Math.abs(e.rotation - camera.old_x) >10 || Math.abs(e.rotation - camera.old_y) >10)
+    {
+       return; 
+    }
+    camera.zoom(e.rotation,e.rotation);
+    camera.old_x = e.rotation;
+    camera.old_y = e.rotation;
     
 }
