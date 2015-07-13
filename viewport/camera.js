@@ -8,12 +8,12 @@ function Camera(width, height)
     //those two should be constant, probalby I shoudl have a getter 
     //and no setter for this, but for now I leave it like this
     this.PAN_SPEED = 0.0005;
-    this.ZOOM_SPEED = 0.005;
+    this.ZOOM_SPEED = 0.01;
     this.ROTATION_SPEED = 0.4;
     
     //Camera placement variables 
-    this.eye = vec3(10,10,30);
-    this.pivot= vec3(0,0,0);
+    this.eye = vec3(350,150,350);
+    this.pivot= vec3(0,100,0);
     //old camera position
     this.old_x = 0;
     this.old_y = 0;

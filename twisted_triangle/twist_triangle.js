@@ -11,8 +11,8 @@ window.onload = function init()
 {
     var canvas = document.getElementById( "gl-canvas" );
     
-    recursion= 0;
-    factor= 0.0;
+    recursion= 4;
+    factor= 1.0;
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
     document.getElementById("slider").onchange = function() { 
