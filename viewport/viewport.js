@@ -50,16 +50,49 @@ window.onload = function init()
     camera = new Camera(canvas.width, canvas.height);
     //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
     OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
+        var hammertime = new Hammer(canvas);
+        hammertime.on('pan', swipe_event );
+        hammertime.on('panstart', function()
+                {
+                    mouse_down = true;
+                    camera.old_x = 0;
+                    camera.old_y = 0;
+                } );
+        hammertime.on('pinchstart',function()
+                {
+                    camera.old_x = 0;
+                    camera.old_y = 0;
+                } );
+        hammertime.on('rotatestart',function()
+                {
+                    camera.old_x = 0;
+                    camera.old_y = 0;
+                } );
+        //hammertime.on('rotate', pinch_event);
+        hammertime.on('pinchin', pan_event);
+        hammertime.on('pinchout', pan_event);
+        camera.ZOOM_SPEED = 0.000001;
+
+hammertime.get('rotate').set({ enable: true });
+
+hammertime.get('pinch').set({ enable: true });
+   
+    if(typeof window.orientation !== 'undefined'){
     
+        
+    }    
+    else
+    { 
     //setting up the webgl window, mostly mouse triggers
     canvas.oncontextmenu = function () {return false;};
     canvas.onmousedown= function(e) { 
-                                        console.log("down");
                                         camera.old_x = e.pageX;
                                         camera.old_y = e.pageY;
                                     mouse_down=true;};
     canvas.onmouseup = function() {mouse_down=false;};
     canvas.onmousemove = mouse_move_event;
+    }
+    
     
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
@@ -145,9 +178,6 @@ function render() {
         gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( vPosition );
 
-        
-        
-        
         gl.bindBuffer(gl.ARRAY_BUFFER, nbo);
         var vNormal = gl.getAttribLocation( program, "VertexNormal" );
         gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
@@ -172,12 +202,14 @@ function render() {
 
 function mouse_move_event(e)
 {
+    console.log(e);
     //we are going to evaluate only if we have the mouse down and we are moving
     if(mouse_down)
     {
         //just chekcing the mnove delta
         if (e.buttons== 4)
         {
+            console.log(e.pageX);
             camera.move(e.pageX, e.pageY);
         }
         
@@ -198,3 +230,26 @@ function mouse_move_event(e)
 
 }
 
+function swipe_event(e)
+{
+    camera.rotate(e.deltaX,e.deltaY);
+    camera.old_x = e.deltaX;
+    camera.old_y = e.deltaY;
+}
+
+function pan_event(e)
+{
+
+    camera.move(e.deltaX,e.deltaY);
+    camera.old_x = e.deltaX;
+    camera.old_y = e.deltaY;
+
+}
+
+function pinch_event(e)
+{
+    camera.zoom(e.angle/10,e.angle/10);
+    camera.old_x = e.angle/10;
+    camera.old_y = e.angle/10;
+    
+}
