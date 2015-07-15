@@ -61,26 +61,13 @@ window.onload = function init()
     
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
-    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
-    //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
+    //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
+    OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
       
         
-    window.addEventListener("gamepadconnected", function(e) {
-  
-  console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
-    gp.index, gp.id,
-    gp.buttons.length, gp.axes.length);
-});
-    
-    gp = null;
-    if(canGame())
-    {
-        gp = navigator.getGamepads()[0];  
-        console.log(gp);
-        interval = setInterval(gamepad_input(),100);
 
+  
     
-    }
      
     if(typeof window.orientation !== 'undefined'){
     
@@ -238,16 +225,18 @@ function mouse_move_event(e)
         //just chekcing the mnove delta
         if (e.buttons== 4)
         {
-            camera.move(e.pageX, e.pageY);
+            camera.move(e.pageX, e.pageY,true);
         }
         
         if (e.buttons == 1)
         {
-            camera.rotate(e.pageX, e.pageY);
+            console.log(e.pageX + " " + camera.old_x);
+            camera.rotate(e.pageX, e.pageY,true);
+
         }
         if (e.buttons ==2)
         {
-            camera.zoom(e.pageX, e.pageY);
+            camera.zoom(e.pageX, e.pageY,true);
         }
         
         //updating stored coordinate for computing delta
@@ -267,7 +256,7 @@ function swipe_event(e)
         camera.old_y = e.deltaY;
         return;
     }
-    camera.rotate(e.deltaX,e.deltaY);
+    camera.rotate(e.deltaX,e.deltaY, false);
     camera.old_x = e.deltaX;
     camera.old_y = e.deltaY;
 }
@@ -276,7 +265,7 @@ function pan_event(e)
 {
 
     
-    camera.move(e.deltaX,e.deltaY);
+    camera.move(e.deltaX,e.deltaY,false);
     camera.old_x = e.deltaX;
     camera.old_y = e.deltaY;
 
@@ -288,7 +277,7 @@ function pinch_event(e)
     {
        return; 
     }
-    camera.zoom(e.rotation,e.rotation);
+    camera.zoom(e.rotation,e.rotation,false);
     camera.old_x = e.rotation;
     camera.old_y = e.rotation;
     
@@ -296,9 +285,10 @@ function pinch_event(e)
 
 function gamepad_input()
 {
-    //console.log("eval");
-    //console.log(gp.buttons);
-    gp = navigator.getGamepads()[0];  
+    gp = navigator.getGamepads();
+    if (!gp || !gp[0])
+    {return;}  
+    gp = gp[0];
     var x,y,z1,z2,l,r,z;
     x = gp.axes[0];
     y = gp.axes[1];
@@ -330,18 +320,27 @@ function gamepad_input()
     z=0; 
     if (l)
     {
-        z=-1;
+        z=1;
     }
     else if(r)
     {
-        z= 1;
+        z= -1;
     }
     
-    camera.rotate(z1*7, z2*7);
-    camera.move(x*10, y*10);
+
+    if (z1 || z2)
+    {
+        camera.rotate(-z1*7, -z2*7,false);
+    }
+    
+    if(x || y)
+    { 
+    console.log(x + " " + y);
+    camera.move(-x*10, -y*10,false);
+    }
     if (z)
     {
-    camera.zoom(z*3,z*3);
+        camera.zoom(z*3,z*3,false);
     }
 
     //interval = setInterval(gamepad_input(),1000);

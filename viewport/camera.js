@@ -28,10 +28,18 @@ function Camera(width, height)
     ///////////////////////////////////////////////////////////
     //// FUNCTIONS
     ////////////////////////////////////////////////////////// 
-    this.zoom = function (x,y)
+    this.zoom = function (x,y, use_old)
     {
+        if (use_old)
+        {
         var dx = self.old_x - x;
         var dy = self.old_y - y;
+        }
+        else
+        {
+            var dx = x;
+            var dy = y;
+        }
 
         var zoom_dir = subtract(self.eye, self.pivot);
         var value = scale(self.ZOOM_SPEED, zoom_dir);
@@ -44,10 +52,18 @@ function Camera(width, height)
         self.eye = add(value,self.eye);  
     }
     
-    this.rotate = function (x,y)
+    this.rotate = function (x,y, use_old)
     {
+        if (use_old)
+        {
         var dx = self.old_x - x;
         var dy = self.old_y - y;
+        }
+        else
+        {
+            var dx = x;
+            var dy = y;
+        }
         //removing pivot offset from camera and rotate from origin
         var tempPos = subtract(self.eye, self.pivot);
         
@@ -67,11 +83,19 @@ function Camera(width, height)
         self.eye = add(vec3(res[3][0],res[3][1],res[3][2]) ,self.pivot);
     }
     
-    this.move = function ( x,y)
+    this.move = function ( x,y, use_old)
     {
-        var aim = subtract(self.pivot, self.eye);
+        if (use_old)
+        {
         var dx = self.old_x - x;
         var dy = self.old_y - y;
+        }
+        else
+        {
+            var dx = x;
+            var dy = y;
+        }
+        var aim = subtract(self.pivot, self.eye);
         var factor = length(aim);
 
         var dir = normalize(cross(aim,vec3(0,1,0)));
