@@ -46,8 +46,15 @@ function loaded_obj()
     mesh_loaded = true;
     spinner.stop();
 }
+function canGame()
+{
+    return "getGamepads" in navigator;
+}
+var gp;
 window.onload = function init()
 {
+    
+     
     spinner = new Spinner({scale:4, color: '#050', lines:10});
     spinner.spin();
     document.body.appendChild(spinner.el);
@@ -58,6 +65,22 @@ window.onload = function init()
     //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
       
         
+    window.addEventListener("gamepadconnected", function(e) {
+  
+  console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+    gp.index, gp.id,
+    gp.buttons.length, gp.axes.length);
+});
+    
+    gp = null;
+    if(canGame())
+    {
+        gp = navigator.getGamepads()[0];  
+        console.log(gp);
+        interval = setInterval(gamepad_input(),100);
+
+    
+    }
      
     if(typeof window.orientation !== 'undefined'){
     
@@ -204,6 +227,7 @@ function render() {
     
     gl.drawArrays( gl.LINES, 0, 44 );
     requestAnimFrame(render);
+    gamepad_input();
 }
 
 function mouse_move_event(e)
@@ -214,7 +238,6 @@ function mouse_move_event(e)
         //just chekcing the mnove delta
         if (e.buttons== 4)
         {
-            console.log(e.pageX);
             camera.move(e.pageX, e.pageY);
         }
         
@@ -240,7 +263,6 @@ function swipe_event(e)
     var le = length(vec2(e.deltaX-camera.old_x, e.deltaY - camera.old_y));
     if (le >30)
     {
-        console.log("blocking rot");
         camera.old_x = e.deltaX;
         camera.old_y = e.deltaY;
         return;
@@ -270,4 +292,60 @@ function pinch_event(e)
     camera.old_x = e.rotation;
     camera.old_y = e.rotation;
     
+}
+
+function gamepad_input()
+{
+    //console.log("eval");
+    //console.log(gp.buttons);
+    gp = navigator.getGamepads()[0];  
+    var x,y,z1,z2,l,r,z;
+    x = gp.axes[0];
+    y = gp.axes[1];
+    z1 = gp.axes[2];
+    z2 = gp.axes[3];
+    l = gp.buttons[6].pressed;
+    r = gp.buttons[7].pressed;
+
+    if (Math.abs(x) <0.2)
+    {
+        x=0;
+    }
+    
+    if (Math.abs(y) <0.2)
+    {
+        y=0;
+    }
+    
+     
+    if (Math.abs(z1) <0.2)
+    {
+        z1=0;
+    }
+    
+    if (Math.abs(z2) <0.2)
+    {
+        z2=0;
+    }
+    z=0; 
+    if (l)
+    {
+        z=-1;
+    }
+    else if(r)
+    {
+        z= 1;
+    }
+    
+    camera.rotate(z1*7, z2*7);
+    camera.move(x*10, y*10);
+    if (z)
+    {
+    camera.zoom(z*3,z*3);
+    }
+
+    //interval = setInterval(gamepad_input(),1000);
+
+
+
 }
