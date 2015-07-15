@@ -103,8 +103,6 @@ function Camera(width, height)
     this.normal_matrix = function()
     {
         var mv = this.model_view_matrix();
-        console.log("-------------------------");
-        console.log(mv);
         
         var nm = mat3();
         for(r=0; r<3;r++)
@@ -114,7 +112,6 @@ function Camera(width, height)
                 nm[r][c] = mv[r][c];
             }
         }
-        console.log(nm);
         return nm;
     }
 

@@ -15,9 +15,10 @@ var idxbo;
 var uvbo;
 var vtx_size;
 var idx_size;
+var spinner;
 function loaded_obj()
 {
-    console.log(meshes["cube"]);
+    //console.log(meshes["cube"]);
     vbo = gl.createBuffer();
     nbo = gl.createBuffer();
     idxbo = gl.createBuffer();
@@ -43,9 +44,14 @@ function loaded_obj()
     gl.bufferData(gl.ARRAY_BUFFER,flatten(m.textures),gl.STATIC_DRAW);
 
     mesh_loaded = true;
+    spinner.stop();
 }
 window.onload = function init()
 {
+    spinner = new Spinner({scale:4, color: '#050', lines:10});
+    spinner.spin();
+    document.body.appendChild(spinner.el);
+    
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
     //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
@@ -77,8 +83,8 @@ window.onload = function init()
         hammertime.on('pinchin', pan_event);
         hammertime.on('pinchout', pan_event);
 
-hammertime.get('rotate').set({ enable: true });
-hammertime.get('pinch').set({ enable: true, pointers: 3 });
+        hammertime.get('rotate').set({ enable: true });
+        hammertime.get('pinch').set({ enable: true, pointers: 3 });
         
     }    
     else

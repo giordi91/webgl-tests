@@ -7,3 +7,9 @@
 [submodule "Common/hammer.js"]
 	path = Common/hammer.js
 	url = https://github.com/hammerjs/hammer.js.git
+[submodule "Common/spin"]
+	path = Common/spin
+	url = https://github.com/fgnass/spin.js
+[submodule "Common/gamepad.js"]
+	path = Common/gamepad.js
+	url = https://github.com/sgraham/gamepad.js/
