@@ -54,8 +54,8 @@ window.onload = function init()
     
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
-    //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
-    OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
+    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
+    //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
       
         
      
