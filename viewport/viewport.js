@@ -20,6 +20,8 @@ var spinner;
 var cubeImage;
 var cubeTexture;
 var texture_loaded = false;
+var m;
+var t;
 
 function initTextures() {
   cubeTexture = gl.createTexture();
@@ -29,7 +31,6 @@ function initTextures() {
   ///cubeImage.src = "http://192.168.0.200/temp_shit/body_color.png"
   cubeImage.src = "textures/body_color.png"
   
-  //cubeImage.src = "textures/body_color.png";
 }
 
 function handleTextureLoaded(image, texture) {
@@ -93,48 +94,20 @@ window.onload = function init()
     
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
-    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
-    //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
+    //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
+    OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
       
      
-    if(typeof window.orientation !== 'undefined'){
+    if(typeof window.orientation !== 'undefined')
+    {
     
-        var hammertime = new Hammer(canvas);
-        hammertime.on('pan', swipe_event );
-        hammertime.on('panstart', function()
-                {
-                    mouse_down = true;
-                    camera.old_x = 0;
-                    camera.old_y = 0;
-                } );
-        hammertime.on('pinchstart',function()
-                {
-                    camera.old_x = 0;
-                    camera.old_y = 0;
-                } );
-        hammertime.on('rotatestart',function()
-                {
-                    camera.old_x = 0;
-                    camera.old_y = 0;
-                } );
-        hammertime.on('rotate', pinch_event);
-        hammertime.on('pinchin', pan_event);
-        hammertime.on('pinchout', pan_event);
-
-        hammertime.get('rotate').set({ enable: true });
-        hammertime.get('pinch').set({ enable: true, pointers: 3 });
-        
+        t = new Touch(canvas, camera);
+        t.init();
     }    
     else
-    { 
-    //setting up the webgl window, mostly mouse triggers
-    canvas.oncontextmenu = function () {return false;};
-    canvas.onmousedown= function(e) { 
-                                        camera.old_x = e.pageX;
-                                        camera.old_y = e.pageY;
-                                    mouse_down=true;};
-    canvas.onmouseup = function() {mouse_down=false;};
-    canvas.onmousemove = mouse_move_event;
+    {
+       m = new Mouse(canvas, camera);
+       m.init();
     }
     
     
@@ -260,69 +233,7 @@ function render() {
     gamepad_input();
 }
 
-function mouse_move_event(e)
-{
-    //we are going to evaluate only if we have the mouse down and we are moving
-    if(mouse_down)
-    {
-        //just chekcing the mnove delta
-        if (e.buttons== 4)
-        {
-            camera.move(e.pageX, e.pageY,true);
-        }
-        
-        if (e.buttons == 1)
-        {
-            camera.rotate(e.pageX, e.pageY,true);
-        }
-        if (e.buttons ==2)
-        {
-            camera.zoom(e.pageX, e.pageY,true);
-        }
-        
-        //updating stored coordinate for computing delta
-        camera.old_x = e.pageX;
-        camera.old_y = e.pageY;
 
-    }
-
-}
-
-function swipe_event(e)
-{
-    var le = length(vec2(e.deltaX-camera.old_x, e.deltaY - camera.old_y));
-    if (le >30)
-    {
-        camera.old_x = e.deltaX;
-        camera.old_y = e.deltaY;
-        return;
-    }
-    camera.rotate(e.deltaX,e.deltaY, true);
-    camera.old_x = e.deltaX;
-    camera.old_y = e.deltaY;
-}
-
-function pan_event(e)
-{
-
-    
-    camera.move(e.deltaX,e.deltaY,true);
-    camera.old_x = e.deltaX;
-    camera.old_y = e.deltaY;
-
-}
-
-function pinch_event(e)
-{
-    if (Math.abs(e.rotation - camera.old_x) >10 || Math.abs(e.rotation - camera.old_y) >10)
-    {
-       return; 
-    }
-    camera.zoom(e.rotation,e.rotation,true);
-    camera.old_x = e.rotation;
-    camera.old_y = e.rotation;
-    
-}
 
 function gamepad_input()
 {
