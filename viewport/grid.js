@@ -1,9 +1,16 @@
+//this class is used to draw a grid on the screen
 
-
-function Grid(size,gl,program )
+/*
+ * @param size: scalar, how many lines to draw
+ * @param step: scalar, the gap between the lines
+ * @param gl: the initialized gl contest
+ * @param program: the program with the shader linked to it
+ */
+function Grid(size,step, gl,program )
 {
     var self = this;
     self.size = size;
+    self.step = step;
     self.program = program;
     self.gl = gl;
     self.buffer = new VertexBuffer(gl, gl.ARRAY_BUFFER);
@@ -11,23 +18,23 @@ function Grid(size,gl,program )
 
     this.init = function()
     {
-        for(i=-5; i<6; i++)
+        for(i=-size; i<size+1; i++)
         {
-           self.data.push(-5); 
+           self.data.push(-self.size *step); 
            self.data.push(0); 
-           self.data.push(i); 
+           self.data.push(i*step); 
 
-           self.data.push(5); 
+           self.data.push(self.size*step); 
            self.data.push(0); 
-           self.data.push(i); 
+           self.data.push(i*step); 
 
-           self.data.push(i); 
+           self.data.push(i*step); 
            self.data.push(0); 
-           self.data.push(-5); 
+           self.data.push(-self.size*step); 
 
-           self.data.push(i); 
+           self.data.push(i*step); 
            self.data.push(0); 
-           self.data.push(5); 
+           self.data.push(self.size*step); 
         }
         self.buffer.upload(self.data)
     }
@@ -41,7 +48,6 @@ function Grid(size,gl,program )
         vPosition = self.gl.getAttribLocation( self.program, "vPosition" );
         self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
         self.gl.enableVertexAttribArray( vPosition );
-        console.log(self.data.length);
         self.gl.drawArrays( self.gl.LINES, 0, self.data.length/3 );
     }
 }

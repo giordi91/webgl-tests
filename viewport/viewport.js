@@ -110,44 +110,14 @@ window.onload = function init()
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
-
-    
     
     //  Load shaders and initialize attribute buffers
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
     
-    grid = new Grid(10, gl,program);
+    grid = new Grid(10,10, gl,program);
     grid.init();
-    console.log(grid.data);
-    //grid data this is a temp solution until i find a better way to organize
-    //data in javascript
-    /*
-    for(i=-5; i<6; i++)
-    {
-       gridData.push(-5); 
-       gridData.push(0); 
-       gridData.push(i); 
-
-       gridData.push(5); 
-       gridData.push(0); 
-       gridData.push(i); 
-
-       gridData.push(i); 
-       gridData.push(0); 
-       gridData.push(-5); 
-
-       gridData.push(i); 
-       gridData.push(0); 
-       gridData.push(5); 
-    }
     
-    // Load the data into the GPU
-    gridB = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, gridB);
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(gridData), gl.STATIC_DRAW );
-    */
-    // Associate out shader variables with our data buffer
     gl.enable(gl.DEPTH_TEST);
     render();
 };
