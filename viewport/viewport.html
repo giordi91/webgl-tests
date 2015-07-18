@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+<style>
+canvas{background:url("textures/bg.jpg");background-size:   cover; }
+</style>
+
+
 <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec3 vPosition;
-attribute vec3 VertexNormal;
+attribute vec3 vNormal;
+attribute vec2 vUV;
 
 uniform mat4 ModelViewM;
 uniform mat4 MVP;
@@ -15,7 +22,7 @@ varying vec3 Position;
 void
 main()
 {
-    Normal = normalize(NormalM*VertexNormal) ;
+    Normal = normalize(NormalM*vNormal) ;
     Position = vec3(ModelViewM * vec4(vPosition,1.0));
     gl_Position =  MVP* vec4(vPosition,  1.0);
 }
@@ -66,6 +73,8 @@ main()
 </head>
 
 <body >
+  
+</style>
 <script id="gl-canvas" type="text/javascript">
 var h = window.innerHeight - 20, w = window.innerWidth -20;
 var canvas = document.createElement("canvas");

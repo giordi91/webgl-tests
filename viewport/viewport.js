@@ -16,9 +16,38 @@ var uvbo;
 var vtx_size;
 var idx_size;
 var spinner;
+//textur param
+var cubeImage;
+var cubeTexture;
+
+function initTextures() {
+  cubeTexture = gl.createTexture();
+  cubeImage = new Image();
+  //cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
+  cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
+  cubeImage.src = "http://192.168.0.200/temp_shit/body_color.png"
+  //cubeImage.src = "textures/body_color.png"
+  
+  //cubeImage.src = "textures/body_color.png";
+}
+
+function handleTextureLoaded(image, texture) {
+    
+    console.log(texture);
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  gl.bindTexture(gl.TEXTURE_2D, null);
+  console.log("loaded textures");
+}
+
+
+
 function loaded_obj()
 {
-    //console.log(meshes["cube"]);
     vbo = gl.createBuffer();
     nbo = gl.createBuffer();
     idxbo = gl.createBuffer();
@@ -55,18 +84,18 @@ window.onload = function init()
 {
     
      
-    spinner = new Spinner({scale:4, color: '#050', lines:10});
+    spinner = new Spinner({scale:4, color: '#000000', lines:10});
     spinner.spin();
+
     document.body.appendChild(spinner.el);
     
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
-    //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
-    OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
+    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
+    //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
       
         
 
-  
     
      
     if(typeof window.orientation !== 'undefined'){
@@ -113,9 +142,11 @@ window.onload = function init()
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
+    initTextures(); 
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 0.6, 0.6, 0.6, 1.0 );
+    gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
+
     
     
     //  Load shaders and initialize attribute buffers
@@ -195,7 +226,7 @@ function render() {
         gl.enableVertexAttribArray( vPosition );
 
         gl.bindBuffer(gl.ARRAY_BUFFER, nbo);
-        var vNormal = gl.getAttribLocation( program, "VertexNormal" );
+        var vNormal = gl.getAttribLocation( program, "vNormal" );
         gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( vNormal );
          
@@ -230,9 +261,7 @@ function mouse_move_event(e)
         
         if (e.buttons == 1)
         {
-            console.log(e.pageX + " " + camera.old_x);
             camera.rotate(e.pageX, e.pageY,true);
-
         }
         if (e.buttons ==2)
         {
@@ -285,10 +314,15 @@ function pinch_event(e)
 
 function gamepad_input()
 {
+    //checking if the gamepad is avaliable
     gp = navigator.getGamepads();
     if (!gp || !gp[0])
     {return;}  
+    
+    //if it is let s use by default the first one 
     gp = gp[0];
+
+    //pull the data needed
     var x,y,z1,z2,l,r,z;
     x = gp.axes[0];
     y = gp.axes[1];
@@ -297,26 +331,12 @@ function gamepad_input()
     l = gp.buttons[6].pressed;
     r = gp.buttons[7].pressed;
 
-    if (Math.abs(x) <0.2)
-    {
-        x=0;
-    }
-    
-    if (Math.abs(y) <0.2)
-    {
-        y=0;
-    }
+    x = Math.abs(x) <0.2 ? x=0 : x;
+    y = Math.abs(y) <0.2 ? y=0 : y;
+    z1 = Math.abs(z1) <0.2 ? z1=0 : z1;
+    z2 = Math.abs(z2) <0.2 ? z2=0 : z2;
     
      
-    if (Math.abs(z1) <0.2)
-    {
-        z1=0;
-    }
-    
-    if (Math.abs(z2) <0.2)
-    {
-        z2=0;
-    }
     z=0; 
     if (l)
     {
@@ -327,7 +347,6 @@ function gamepad_input()
         z= -1;
     }
     
-
     if (z1 || z2)
     {
         camera.rotate(-z1*7, -z2*7,false);
@@ -335,16 +354,10 @@ function gamepad_input()
     
     if(x || y)
     { 
-    console.log(x + " " + y);
     camera.move(-x*10, -y*10,false);
     }
     if (z)
     {
         camera.zoom(z*3,z*3,false);
     }
-
-    //interval = setInterval(gamepad_input(),1000);
-
-
-
 }
