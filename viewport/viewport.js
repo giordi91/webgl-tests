@@ -1,10 +1,9 @@
 //I KNOW , don't think I DONT KNOW IT, but I truly do, all those globals are ugly
 //as shit, as soon I get better at javasctipt I am gonna do something about this
 var gl;
-var mouse_down= 0;
 var program;
 var gridData = [];
-var gridB;
+var grid;
 var camera ;
 var mesh_loaded;
 var meshes = {};
@@ -78,10 +77,6 @@ function loaded_obj()
     mesh_loaded = true;
     spinner.stop();
 }
-function canGame()
-{
-    return "getGamepads" in navigator;
-}
 var gp;
 window.onload = function init()
 {
@@ -89,18 +84,16 @@ window.onload = function init()
      
     spinner = new Spinner({scale:4, color: '#000000', lines:10});
     spinner.spin();
-
     document.body.appendChild(spinner.el);
     
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
-    //OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
-    OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
+    OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
+    //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
       
      
     if(typeof window.orientation !== 'undefined')
     {
-    
         t = new Touch(canvas, camera);
         t.init();
     }    
@@ -109,7 +102,6 @@ window.onload = function init()
        m = new Mouse(canvas, camera);
        m.init();
     }
-    
     
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
@@ -125,8 +117,12 @@ window.onload = function init()
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
     
+    grid = new Grid(10, gl,program);
+    grid.init();
+    console.log(grid.data);
     //grid data this is a temp solution until i find a better way to organize
     //data in javascript
+    /*
     for(i=-5; i<6; i++)
     {
        gridData.push(-5); 
@@ -150,7 +146,7 @@ window.onload = function init()
     gridB = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, gridB);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(gridData), gl.STATIC_DRAW );
-
+    */
     // Associate out shader variables with our data buffer
     gl.enable(gl.DEPTH_TEST);
     render();
@@ -204,11 +200,11 @@ function render() {
         
         if (texture_loaded)
         {
-        gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
-        gl.bindBuffer(gl.ARRAY_BUFFER, uvbo);
-        var vUV = gl.getAttribLocation( program, "vUV" );
-        gl.vertexAttribPointer( vUV,2, gl.FLOAT, false, 0, 0 );
-        gl.enableVertexAttribArray( vUV);
+            gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
+            gl.bindBuffer(gl.ARRAY_BUFFER, uvbo);
+            var vUV = gl.getAttribLocation( program, "vUV" );
+            gl.vertexAttribPointer( vUV,2, gl.FLOAT, false, 0, 0 );
+            gl.enableVertexAttribArray( vUV);
         }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxbo);
         gl.drawElements(gl.TRIANGLES,idx_size, gl.UNSIGNED_SHORT,0);
@@ -221,66 +217,11 @@ function render() {
     }
     
     //draw grid 
-    loc = gl.getUniformLocation(program, "color");
-    gl.uniform4fv(loc,flatten(vec4(1,1,1,1)));
-    gl.bindBuffer(gl.ARRAY_BUFFER,gridB);
-    vPosition = gl.getAttribLocation( program, "vPosition" );
-    gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vPosition );
-    
-    gl.drawArrays( gl.LINES, 0, 44 );
+    grid.draw();
+    //gl.bindBuffer(gl.ARRAY_BUFFER,gridB);
     requestAnimFrame(render);
     gamepad_input();
 }
 
 
 
-function gamepad_input()
-{
-    //checking if the gamepad is avaliable
-    gp = navigator.getGamepads();
-    if (!gp || !gp[0])
-    {return;}  
-    
-    //if it is let s use by default the first one 
-    gp = gp[0];
-
-    //pull the data needed
-    var x,y,z1,z2,l,r,z;
-    x = gp.axes[0];
-    y = gp.axes[1];
-    z1 = gp.axes[2];
-    z2 = gp.axes[3];
-    l = gp.buttons[6].pressed;
-    r = gp.buttons[7].pressed;
-
-    x = Math.abs(x) <0.2 ? x=0 : x;
-    y = Math.abs(y) <0.2 ? y=0 : y;
-    z1 = Math.abs(z1) <0.2 ? z1=0 : z1;
-    z2 = Math.abs(z2) <0.2 ? z2=0 : z2;
-    
-     
-    z=0; 
-    if (l)
-    {
-        z=1;
-    }
-    else if(r)
-    {
-        z= -1;
-    }
-    
-    if (z1 || z2)
-    {
-        camera.rotate(-z1*7, -z2*7,false);
-    }
-    
-    if(x || y)
-    { 
-    camera.move(-x*10, -y*10,false);
-    }
-    if (z)
-    {
-        camera.zoom(z*3,z*3,false);
-    }
-}

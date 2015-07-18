@@ -15,11 +15,25 @@ window.onload = function init()
     factor= 1.0;
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
-    document.getElementById("slider").onchange = function() { 
+    /*
+    document.getElementById("slider").onchange = function(event) { 
             recursion= event.srcElement.value; eval_points();render();}
     
-    document.getElementById("tslider").onchange = function() { 
+    document.getElementById("tslider").onchange = function(event) { 
             factor= event.srcElement.value; eval_points();render();}
+
+    */
+   var slider1 = document.getElementById("slider");
+slider1.onchange = function() {
+           recursion= parseInt(slider1.value); 
+ eval_points();
+ render();}
+   
+var slider2 = document.getElementById("tslider");
+slider2.onchange = function() {
+           factor= parseInt(slider2.value); 
+ eval_points();
+ render();}
     //generate the recursion data
     vtx = [-0.6, -0.4, 0, 0.7, .6, -0.4];
     
