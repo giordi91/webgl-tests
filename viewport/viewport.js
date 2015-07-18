@@ -19,14 +19,15 @@ var spinner;
 //textur param
 var cubeImage;
 var cubeTexture;
+var texture_loaded = false;
 
 function initTextures() {
   cubeTexture = gl.createTexture();
   cubeImage = new Image();
   //cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
   cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
-  cubeImage.src = "http://192.168.0.200/temp_shit/body_color.png"
-  //cubeImage.src = "textures/body_color.png"
+  ///cubeImage.src = "http://192.168.0.200/temp_shit/body_color.png"
+  cubeImage.src = "textures/body_color.png"
   
   //cubeImage.src = "textures/body_color.png";
 }
@@ -37,11 +38,13 @@ function handleTextureLoaded(image, texture) {
 
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
   gl.generateMipmap(gl.TEXTURE_2D);
-  gl.bindTexture(gl.TEXTURE_2D, null);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
   console.log("loaded textures");
+    gl.activeTexture(gl.TEXTURE0);
+    texture_loaded=true;
 }
 
 
@@ -71,7 +74,6 @@ function loaded_obj()
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idxs,gl.STATIC_DRAW)
     gl.bindBuffer(gl.ARRAY_BUFFER,uvbo);
     gl.bufferData(gl.ARRAY_BUFFER,flatten(m.textures),gl.STATIC_DRAW);
-
     mesh_loaded = true;
     spinner.stop();
 }
@@ -94,9 +96,6 @@ window.onload = function init()
     OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
     //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
       
-        
-
-    
      
     if(typeof window.orientation !== 'undefined'){
     
@@ -229,10 +228,23 @@ function render() {
         var vNormal = gl.getAttribLocation( program, "vNormal" );
         gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( vNormal );
-         
+        
+        if (texture_loaded)
+        {
+        gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
+        gl.bindBuffer(gl.ARRAY_BUFFER, uvbo);
+        var vUV = gl.getAttribLocation( program, "vUV" );
+        gl.vertexAttribPointer( vUV,2, gl.FLOAT, false, 0, 0 );
+        gl.enableVertexAttribArray( vUV);
+        }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxbo);
         gl.drawElements(gl.TRIANGLES,idx_size, gl.UNSIGNED_SHORT,0);
         gl.disableVertexAttribArray(vNormal);
+        
+        if (texture_loaded)
+        {
+        gl.disableVertexAttribArray(vUV);
+        }
     }
     
     //draw grid 
@@ -285,7 +297,7 @@ function swipe_event(e)
         camera.old_y = e.deltaY;
         return;
     }
-    camera.rotate(e.deltaX,e.deltaY, false);
+    camera.rotate(e.deltaX,e.deltaY, true);
     camera.old_x = e.deltaX;
     camera.old_y = e.deltaY;
 }
@@ -294,7 +306,7 @@ function pan_event(e)
 {
 
     
-    camera.move(e.deltaX,e.deltaY,false);
+    camera.move(e.deltaX,e.deltaY,true);
     camera.old_x = e.deltaX;
     camera.old_y = e.deltaY;
 
@@ -306,7 +318,7 @@ function pinch_event(e)
     {
        return; 
     }
-    camera.zoom(e.rotation,e.rotation,false);
+    camera.zoom(e.rotation,e.rotation,true);
     camera.old_x = e.rotation;
     camera.old_y = e.rotation;
     
