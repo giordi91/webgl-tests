@@ -7,63 +7,6 @@ canvas{background:url("textures/bg.jpg");background-size:   cover; }
 
 </style>
 
-<script id="vertex-shader" type="x-shader/x-vertex">
-attribute vec3 vPosition;
-attribute vec3 vNormal;
-attribute vec2 vUV;
-
-uniform mat4 ModelViewM;
-uniform mat4 MVP;
-uniform mat4 projM;
-uniform mat3 NormalM;
-
-varying vec3 Normal;
-varying vec3 Position;
-varying vec2 uv;
-void
-main()
-{
-    Normal = normalize(NormalM*vNormal) ;
-    Position = vec3(ModelViewM * vec4(vPosition,1.0));
-    uv = vUV;
-    gl_Position =  MVP* vec4(vPosition,  1.0);
-}
-</script>
-
-<script id="fragment-shader" type="x-shader/x-fragment">
-precision highp float;
-precision highp sampler2D;
-uniform vec4 color;
-uniform vec3 K;
-uniform vec3 lightPosition;
-uniform float shiness;
-varying vec3 Normal;
-varying vec3 Position;
-varying vec2 uv;
-
-uniform sampler2D tex1;
-vec3 ads()
-{
-    vec3 n = normalize(Normal);
-    vec3 s = normalize(lightPosition - Position);
-    vec3 v = normalize(-Position);
-    vec3 r = reflect(-s,n);
-    
-    vec3 lightIntenisty = vec3(0.6);
-    vec3 Ka = vec3 (0.4); // ambient reflection coefficient
-    vec3 Kd = vec3 (0.7); //diffuse  reflection coefficient
-    vec3 Ks = vec3 (0.7); //specular reflection coefficient
-    return lightIntenisty * (Ka + Kd *max(dot(s,n),0.0) + Ks * pow(max(dot(r,v),0.0),shiness));
-
-}
-void
-main()
-{
-    vec4 tex_color= texture2D(tex1, vec2(uv.x,1.0 -uv.y));
-    gl_FragColor =  vec4(ads(),1.0) *tex_color;
-}
-</script>
-
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/flatten.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
