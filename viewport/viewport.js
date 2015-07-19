@@ -37,8 +37,8 @@ function handleTextureLoaded(image, texture) {
 
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.bindTexture(gl.TEXTURE_2D, texture);
   console.log("loaded textures");
@@ -135,33 +135,18 @@ function render() {
     
     //camera matrix
     var projM = camera.projection_matrix(); 
-    var loc = gl.getUniformLocation(program.get(), "projM");
-    gl.uniformMatrix4fv(loc,false,flatten(projM));
-    
+    program.setMatrix4("projM", projM);
     var ModelViewM= camera.model_view_matrix();
-    loc = gl.getUniformLocation(program.get(), "ModelViewM");
-    gl.uniformMatrix4fv(loc,false,flatten(ModelViewM));
+    program.setMatrix4("ModelViewM", camera.model_view_matrix());
+    program.setMatrix4("MVP", mult(projM,ModelViewM));
+    program.setMatrix3("NormalM", camera.normal_matrix());
     
-    var MVP= mult(projM,ModelViewM);
-    loc = gl.getUniformLocation(program.get(), "MVP");
-    gl.uniformMatrix4fv(loc,false,flatten(MVP));
+    //set materials attributres, will change in the future
+    program.setUniform4f("color", vec4(1,0,0,1));
+    program.setUniform4f("K", vec3(0.6,0.6,0.6,1));
+    program.setUniform3f("lightPosition", vec3(0,0,0));
+    program.setUniform1f("shiness", 100.0);
 
-    var NormalM= camera.normal_matrix();
-    loc = gl.getUniformLocation(program.get(), "NormalM");
-    gl.uniformMatrix3fv(loc,false,flatten(NormalM));
-    //draw triangle
-    
-    loc = gl.getUniformLocation(program.get(), "color");
-    gl.uniform4fv(loc,flatten(vec4(1,0,0,1)));
-
-    loc = gl.getUniformLocation(program.get(), "K");
-    gl.uniform3fv(loc,flatten(vec3(0.6,0.6,0.6)));
-    
-    loc = gl.getUniformLocation(program.get(), "shiness");
-    gl.uniform1f(loc,100.0);
-    
-    loc = gl.getUniformLocation(program.get(), "lightPosition");
-    gl.uniform3fv(loc,flatten(vec3(0,0,0)));
     
     if (mesh_loaded)
     {

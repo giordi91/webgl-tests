@@ -24,7 +24,6 @@ function GLSLProgram(gl)
     {
         var shdId = self.__getShader(path, type);
         self.gl.attachShader(self.program, shdId);
-        //gl.linkProgram(program);
     }
 
     this.__getShader = function ( shaderName, type) {
@@ -52,7 +51,6 @@ function GLSLProgram(gl)
             alert("Could not initialise shaders: " + lastError);
             return null;
         }
-        
     }
 
     this.use = function()
@@ -66,4 +64,33 @@ function GLSLProgram(gl)
     }
 
 
+    this.setMatrix4 =function (name, value)
+    {
+        var loc = gl.getUniformLocation(self.program, name);
+        self.gl.uniformMatrix4fv(loc,false,flatten(value));
+    }
+
+    this.setMatrix3 =function (name, value)
+    {
+        var loc = gl.getUniformLocation(self.program, name);
+        self.gl.uniformMatrix3fv(loc,false,flatten(value));
+    }
+
+    this.setUniform4f =function (name, value)
+    {
+        var loc = gl.getUniformLocation(self.program, name);
+        self.gl.uniform4fv(loc,flatten(value));
+    }
+    
+    this.setUniform3f =function (name, value)
+    {
+        var loc = gl.getUniformLocation(self.program, name);
+        self.gl.uniform3fv(loc,flatten(value));
+    }
+    
+    this.setUniform1f =function (name, value)
+    {
+        var loc = gl.getUniformLocation(self.program, name);
+        self.gl.uniform1f(loc,value);
+    }
 }
