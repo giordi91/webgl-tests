@@ -2,6 +2,7 @@
 //as shit, as soon I get better at javasctipt I am gonna do something about this
 var gl;
 var program;
+var programBasic;
 var grid;
 var camera ;
 var mesh_loaded;
@@ -20,6 +21,7 @@ var cubeTexture;
 var texture_loaded = false;
 var m;
 var t;
+var gp;
 
 function initTextures() {
   cubeTexture = gl.createTexture();
@@ -31,17 +33,17 @@ function initTextures() {
   
 }
 
-function handleTextureLoaded(image, texture) {
-    
+function handleTextureLoaded(image, texture) 
+{
     console.log(texture);
 
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-  gl.generateMipmap(gl.TEXTURE_2D);
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  console.log("loaded textures");
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    console.log("loaded textures");
     gl.activeTexture(gl.TEXTURE0);
     texture_loaded=true;
 }
@@ -76,7 +78,6 @@ function loaded_obj()
     mesh_loaded = true;
     spinner.stop();
 }
-var gp;
 window.onload = function init()
 {
     
@@ -110,10 +111,7 @@ window.onload = function init()
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
     
-    //  Load shaders and initialize attribute buffers
-    //program = initShaders( gl, "vertex-shader", "fragment-shader" );
-    //gl.useProgram( program );
-
+    //initialize shader programs
     program = new GLSLProgram(gl);
     program.init();
     program.loadShader("shaders/meshShaderVtx.glsl", gl.VERTEX_SHADER) 
@@ -121,8 +119,14 @@ window.onload = function init()
     program.link(); 
     program.use();
     
+    programBasic = new GLSLProgram(gl);
+    programBasic.init();
+    programBasic.loadShader("shaders/basicShaderVtx.glsl", gl.VERTEX_SHADER) 
+    programBasic.loadShader("shaders/basicShaderFrag.glsl", gl.FRAGMENT_SHADER) 
+    programBasic.link(); 
+    //programBasic.use();
 
-    grid = new Grid(10,10, gl,program);
+    grid = new Grid(10,10, gl,programBasic);
     grid.init();
     
     gl.enable(gl.DEPTH_TEST);
@@ -134,12 +138,15 @@ function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
     
     //camera matrix
+    program.use();
     var projM = camera.projection_matrix(); 
     program.setMatrix4("projM", projM);
     var ModelViewM= camera.model_view_matrix();
     program.setMatrix4("ModelViewM", camera.model_view_matrix());
     program.setMatrix4("MVP", mult(projM,ModelViewM));
     program.setMatrix3("NormalM", camera.normal_matrix());
+    
+    
     
     //set materials attributres, will change in the future
     program.setUniform4f("color", vec4(1,0,0,1));
@@ -179,6 +186,8 @@ function render() {
     }
     
     //draw grid 
+    programBasic.use(); 
+    programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
     grid.draw();
     //gl.bindBuffer(gl.ARRAY_BUFFER,gridB);
     requestAnimFrame(render);

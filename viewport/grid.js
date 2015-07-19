@@ -41,13 +41,13 @@ function Grid(size,step, gl,program )
 
     this.draw = function()
     {
-        //loc = self.gl.getUniformLocation(self.program, "color");
-        //console.log(loc);
-        //self.gl.uniform4fv(loc,flatten(vec4(1,1,1,1)));
+        self.program.use()
         self.buffer.bind(); 
         vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
         self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
         self.gl.enableVertexAttribArray( vPosition );
+        
+        self.program.setUniform4f("color",vec4(1,1,1,1));
         self.gl.drawArrays( self.gl.LINES, 0, self.data.length/3 );
     }
 }
