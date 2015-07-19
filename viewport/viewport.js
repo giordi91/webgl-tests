@@ -3,23 +3,19 @@
 var gl;
 var program;
 var programBasic;
-var grid;
+
 var camera ;
-var mesh_loaded;
-var meshes = {};
-//temp variables for obj loaded
-var spinner;
-//textur param
-var tex_color;
-var texture_loaded = false;
 var mouse_h;
 var touch_h;
-var gp;
+
 var body;
+var grid;
 
 
 window.onload = function init()
 {
+    //initializeing the camera
+    camera = new Camera(canvas.width, canvas.height);
      
     if(typeof window.orientation !== 'undefined')
     {
@@ -40,8 +36,6 @@ window.onload = function init()
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
     gl.enable(gl.DEPTH_TEST);
     
-    //initializeing the camera
-    camera = new Camera(canvas.width, canvas.height);
     
     //initialize shader programs
     //loading the shader for the mesh, more complex shader
@@ -52,8 +46,6 @@ window.onload = function init()
     program.link(); 
     program.use();
    
-    
-    
     //loading shader for solid drawing like the grid 
     programBasic = new GLSLProgram(gl);
     programBasic.init();

@@ -23,7 +23,6 @@ function Texture(gl, path)
         self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MAG_FILTER, self.gl.LINEAR);
         self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.LINEAR_MIPMAP_NEAREST);
         self.gl.generateMipmap(self.gl.TEXTURE_2D);
-        self.bind();
         self.gl.activeTexture(self.gl.TEXTURE0);
         self.loaded=true;
     }
