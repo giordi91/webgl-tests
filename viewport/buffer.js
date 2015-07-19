@@ -3,7 +3,7 @@
  * @param gl: the initialized gl context
  * @param buffer_type: the kind of buffer to use , ex gl.ARRAY_BUFFER
 */
-function VertexBuffer(gl, buffer_type)
+function Buffer(gl, buffer_type)
 {
     var self =this;
     this.id;
@@ -29,6 +29,30 @@ function VertexBuffer(gl, buffer_type)
         self.gl.bufferData( self.type, 
                             flatten(data), 
                             self.gl.STATIC_DRAW );
+        if(self.gl.getError())
+        {
+            console.log("ERROR IN UPLOADING DATA: " + self.type);
+        } 
+    }
+    
+    this.uploadUInt16 = function(data)
+    {
+        //lets flatten it up as array Uint16
+        var idx_size = data.length;
+        var data16 = new Uint16Array(idx_size);
+        for(i=0; i<idx_size;i++)
+        {
+            data16[i] = data[i];
+        }
+        self.bind();
+        self.gl.bufferData( self.type, 
+                            data16, 
+                            self.gl.STATIC_DRAW );
+        if(self.gl.getError())
+        {
+            console.log("ERROR IN UPLOADING DATA: " + self.type);
+        } 
+        
     }
 }
 

@@ -13,8 +13,9 @@ function Grid(size,step, gl,program )
     self.step = step;
     self.program = program;
     self.gl = gl;
-    self.buffer = new VertexBuffer(gl, gl.ARRAY_BUFFER);
+    self.buffer = new Buffer(gl, gl.ARRAY_BUFFER);
     self.data = []; 
+    self.GRID_COLOR = vec4(0.3,0.5,0.3,1);
 
     this.init = function()
     {
@@ -47,7 +48,7 @@ function Grid(size,step, gl,program )
         self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
         self.gl.enableVertexAttribArray( vPosition );
         
-        self.program.setUniform4f("color",vec4(1,1,1,1));
+        self.program.setUniform4f("color",self.GRID_COLOR);
         self.gl.drawArrays( self.gl.LINES, 0, self.data.length/3 );
     }
 }

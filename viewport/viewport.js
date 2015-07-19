@@ -12,7 +12,6 @@ var vbo;
 var nbo;
 var idxbo;
 var uvbo;
-var vtx_size;
 var idx_size;
 var spinner;
 //textur param
@@ -22,6 +21,7 @@ var texture_loaded = false;
 var m;
 var t;
 var gp;
+var body;
 
 function initTextures() {
   cubeTexture = gl.createTexture();
@@ -60,7 +60,6 @@ function loaded_obj()
     var m = meshes["cube"];
     gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
     gl.bufferData(gl.ARRAY_BUFFER,flatten(m.vertices),gl.STATIC_DRAW);
-    vtx_size = m.vertices.length;
 
     gl.bindBuffer(gl.ARRAY_BUFFER,nbo);
     gl.bufferData(gl.ARRAY_BUFFER,flatten(m.vertexNormals),gl.STATIC_DRAW);
@@ -76,21 +75,21 @@ function loaded_obj()
     gl.bindBuffer(gl.ARRAY_BUFFER,uvbo);
     gl.bufferData(gl.ARRAY_BUFFER,flatten(m.textures),gl.STATIC_DRAW);
     mesh_loaded = true;
-    spinner.stop();
+    //spinner.stop();
 }
 window.onload = function init()
 {
     
      
-    spinner = new Spinner({scale:4, color: '#000000', lines:10});
-    spinner.spin();
-    document.body.appendChild(spinner.el);
+    //spinner = new Spinner({scale:4, color: '#000000', lines:10});
+    //spinner.spin();
+    //document.body.appendChild(spinner.el);
     
     mesh_loaded = false; 
     camera = new Camera(canvas.width, canvas.height);
     OBJ.downloadMeshes({"cube":"http://192.168.0.200/temp_shit/body2.obj"},loaded_obj,meshes);
     //OBJ.downloadMeshes({"cube":"objs/body2.obj"},loaded_obj,meshes);
-      
+    
      
     if(typeof window.orientation !== 'undefined')
     {
@@ -106,28 +105,32 @@ window.onload = function init()
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
-    initTextures(); 
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
     
     //initialize shader programs
+    //loading the shader for the mesh, more complex shader
     program = new GLSLProgram(gl);
     program.init();
     program.loadShader("shaders/meshShaderVtx.glsl", gl.VERTEX_SHADER) 
     program.loadShader("shaders/meshShaderFrag.glsl", gl.FRAGMENT_SHADER) 
     program.link(); 
     program.use();
-    
+   
+    body = new Mesh(gl, program);  
+    body.load_obj("http://192.168.0.200/temp_shit/body2.obj");
+    //loading shader for solid drawing like the grid 
     programBasic = new GLSLProgram(gl);
     programBasic.init();
     programBasic.loadShader("shaders/basicShaderVtx.glsl", gl.VERTEX_SHADER) 
     programBasic.loadShader("shaders/basicShaderFrag.glsl", gl.FRAGMENT_SHADER) 
     programBasic.link(); 
-    //programBasic.use();
 
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
+    
+    //initTextures(); 
     
     gl.enable(gl.DEPTH_TEST);
     render();
@@ -146,7 +149,7 @@ function render() {
     program.setMatrix4("MVP", mult(projM,ModelViewM));
     program.setMatrix3("NormalM", camera.normal_matrix());
     
-    
+  
     
     //set materials attributres, will change in the future
     program.setUniform4f("color", vec4(1,0,0,1));
@@ -154,7 +157,9 @@ function render() {
     program.setUniform3f("lightPosition", vec3(0,0,0));
     program.setUniform1f("shiness", 100.0);
 
+    body.draw(); 
     
+    /* 
     if (mesh_loaded)
     {
         gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
@@ -183,14 +188,19 @@ function render() {
         {
         gl.disableVertexAttribArray(vUV);
         }
-    }
     
+    }
+    */
+        
     //draw grid 
+    
     programBasic.use(); 
     programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
     grid.draw();
-    //gl.bindBuffer(gl.ARRAY_BUFFER,gridB);
+     
+    //requesting next frame
     requestAnimFrame(render);
+    //evaluating game inputs
     gamepad_input();
 }
 

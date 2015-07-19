@@ -93,4 +93,11 @@ function GLSLProgram(gl)
         var loc = gl.getUniformLocation(self.program, name);
         self.gl.uniform1f(loc,value);
     }
+
+    this.getAttribLocation = function(name)
+    {
+        return self.gl.getAttribLocation(self.program, name);
+    }
+
+
 }
