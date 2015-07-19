@@ -2,7 +2,6 @@
 //as shit, as soon I get better at javasctipt I am gonna do something about this
 var gl;
 var program;
-var gridData = [];
 var grid;
 var camera ;
 var mesh_loaded;
@@ -112,9 +111,17 @@ window.onload = function init()
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
     
     //  Load shaders and initialize attribute buffers
-    program = initShaders( gl, "vertex-shader", "fragment-shader" );
-    gl.useProgram( program );
+    //program = initShaders( gl, "vertex-shader", "fragment-shader" );
+    //gl.useProgram( program );
+
+    program = new GLSLProgram(gl);
+    program.init();
+    program.loadShader("shaders/meshShaderVtx.glsl", gl.VERTEX_SHADER) 
+    program.loadShader("shaders/meshShaderFrag.glsl", gl.FRAGMENT_SHADER) 
+    program.link(); 
+    program.use();
     
+
     grid = new Grid(10,10, gl,program);
     grid.init();
     
@@ -128,43 +135,43 @@ function render() {
     
     //camera matrix
     var projM = camera.projection_matrix(); 
-    var loc = gl.getUniformLocation(program, "projM");
+    var loc = gl.getUniformLocation(program.get(), "projM");
     gl.uniformMatrix4fv(loc,false,flatten(projM));
     
     var ModelViewM= camera.model_view_matrix();
-    loc = gl.getUniformLocation(program, "ModelViewM");
+    loc = gl.getUniformLocation(program.get(), "ModelViewM");
     gl.uniformMatrix4fv(loc,false,flatten(ModelViewM));
     
     var MVP= mult(projM,ModelViewM);
-    loc = gl.getUniformLocation(program, "MVP");
+    loc = gl.getUniformLocation(program.get(), "MVP");
     gl.uniformMatrix4fv(loc,false,flatten(MVP));
 
     var NormalM= camera.normal_matrix();
-    loc = gl.getUniformLocation(program, "NormalM");
+    loc = gl.getUniformLocation(program.get(), "NormalM");
     gl.uniformMatrix3fv(loc,false,flatten(NormalM));
     //draw triangle
     
-    loc = gl.getUniformLocation(program, "color");
+    loc = gl.getUniformLocation(program.get(), "color");
     gl.uniform4fv(loc,flatten(vec4(1,0,0,1)));
 
-    loc = gl.getUniformLocation(program, "K");
+    loc = gl.getUniformLocation(program.get(), "K");
     gl.uniform3fv(loc,flatten(vec3(0.6,0.6,0.6)));
     
-    loc = gl.getUniformLocation(program, "shiness");
+    loc = gl.getUniformLocation(program.get(), "shiness");
     gl.uniform1f(loc,100.0);
     
-    loc = gl.getUniformLocation(program, "lightPosition");
+    loc = gl.getUniformLocation(program.get(), "lightPosition");
     gl.uniform3fv(loc,flatten(vec3(0,0,0)));
     
     if (mesh_loaded)
     {
         gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
-        var vPosition = gl.getAttribLocation( program, "vPosition" );
+        var vPosition = gl.getAttribLocation( program.get(), "vPosition" );
         gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( vPosition );
 
         gl.bindBuffer(gl.ARRAY_BUFFER, nbo);
-        var vNormal = gl.getAttribLocation( program, "vNormal" );
+        var vNormal = gl.getAttribLocation( program.get(), "vNormal" );
         gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( vNormal );
         
@@ -172,7 +179,7 @@ function render() {
         {
             gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
             gl.bindBuffer(gl.ARRAY_BUFFER, uvbo);
-            var vUV = gl.getAttribLocation( program, "vUV" );
+            var vUV = gl.getAttribLocation( program.get(), "vUV" );
             gl.vertexAttribPointer( vUV,2, gl.FLOAT, false, 0, 0 );
             gl.enableVertexAttribArray( vUV);
         }

@@ -45,7 +45,7 @@ function Grid(size,step, gl,program )
         //console.log(loc);
         //self.gl.uniform4fv(loc,flatten(vec4(1,1,1,1)));
         self.buffer.bind(); 
-        vPosition = self.gl.getAttribLocation( self.program, "vPosition" );
+        vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
         self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
         self.gl.enableVertexAttribArray( vPosition );
         self.gl.drawArrays( self.gl.LINES, 0, self.data.length/3 );
