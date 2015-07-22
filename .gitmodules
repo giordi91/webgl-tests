@@ -13,3 +13,9 @@
 [submodule "Common/gamepad.js"]
 	path = Common/gamepad.js
 	url = https://github.com/sgraham/gamepad.js/
+[submodule "Common/colorPicker"]
+	path = Common/colorPicker
+	url = https://github.com/PitPik/colorPicker.git
+[submodule "Common/jColorPicker"]
+	path = Common/jColorPicker
+	url = https://github.com/josedvq/colpick-jQuery-Color-Picker.git
