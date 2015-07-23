@@ -69,12 +69,12 @@ function render() {
             gl.uniform4fv(loc,colors_list[b]);
             gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
             gl.enableVertexAttribArray( vPosition );
-            gl.drawArrays(gl.LINE_STRIP,0, buffers_sizes[b]/2);
+            gl.drawArrays(gl.TRIANGLE_STRIP,0, buffers_sizes[b]/2);
         }
     }
     
     
-    if (curr_buffer && points.length>4)
+    if (curr_buffer && points.length>6)
     {
         curr_buffer.bind();
         var vPosition = gl.getAttribLocation( program, "vPosition" );
@@ -82,9 +82,10 @@ function render() {
         var loc = gl.getUniformLocation(program, "color");
         gl.uniform4fv(loc,curr_color);
         gl.enableVertexAttribArray( vPosition );
-        gl.drawArrays(gl.LINE_STRIP,0, points.length/2);
+        gl.drawArrays(gl.TRIANGLE_STRIP,0, points.length/2);
     }
     
+    /*
     if(t_curr_buffer && t_points.length>6)
     {
        t_curr_buffer.bind();
@@ -96,7 +97,7 @@ function render() {
         //gl.drawArrays(gl.TRIANGLE_STRIP,0,t_points.length/2);
         gl.drawArrays(gl.TRIANGLE_STRIP,0,t_points.length/2);
     }
-
+    */
     requestAnimFrame(render);
 }
 
@@ -110,14 +111,8 @@ function mouse_move_event(e)
         {
             curr_buffer = new Buffer(gl,gl.ARRAY_BUFFER);
         } 
-        if (!t_curr_buffer) 
-        {
-            t_curr_buffer = new Buffer(gl,gl.ARRAY_BUFFER);
-        } 
         var newp= remap_point(e.pageX-7,e.pageY-7);     
-        points.push(newp[0],newp[1]);
         curr_buffer.bind(); 
-        curr_buffer.upload(points, gl.DYNAMIC_DRAW);
 
         //triangles
         if (!old)
@@ -131,8 +126,9 @@ function mouse_move_event(e)
             var delta3 = normalize(vec3(delta[0], delta[1],0.0));
             var up = vec3(0,0,1); 
             var perp3_v = scale(LINE_WIDTH,normalize(cross(delta3,up)));
+            console.log(length(perp3_v));
             //perp2_v = vec2(perp3
-            if (t_points.length<1)
+            if (points.length<1)
             {
                 console.log("base");
                 //compute the base of the strip 
@@ -148,7 +144,7 @@ function mouse_move_event(e)
                 var p4 = [newp[0] - perp3_v[0],
                           newp[1] - perp3_v[1]];
             
-                t_points.push(p2[0],p2[1] ,
+                points.push(p2[0],p2[1] ,
                               p1[0],p1[1],
                               p4[0],p4[1],
                               p3[0],p3[1]); 
@@ -167,13 +163,12 @@ function mouse_move_event(e)
                 
                 var p2 = [newp[0] + perp3_v[0],
                           newp[1] + perp3_v[1]];
-                t_points.push(p1[0],p1[1] ,
+                points.push(p1[0],p1[1] ,
                               p2[0],p2[1])
                 console.log("regular");
             } 
 
-            t_curr_buffer.bind();
-            t_curr_buffer.upload(t_points,gl.DYNAMIC_DRAW);
+            curr_buffer.upload(points,gl.DYNAMIC_DRAW);
         }
 
             old = newp;
@@ -194,8 +189,8 @@ function mouse_release_event(e)
     }
 
     curr_buffer = null;
+    old = null;
     points =[];
-    console.log("release"); 
 }
 
 function remap_point(x,y)
