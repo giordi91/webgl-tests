@@ -58,7 +58,6 @@ window.onload = function init()
     body.load_obj("http://192.168.0.200/temp_shit/body2.obj");
     //body.load_obj("objs/body2.obj");
     body.load_color_texture("textures/body_color.png");
-
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
     

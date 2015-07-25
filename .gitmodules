@@ -13,3 +13,6 @@
 [submodule "Common/gamepad.js"]
 	path = Common/gamepad.js
 	url = https://github.com/sgraham/gamepad.js/
+[submodule "Common/gl-matrix"]
+	path = Common/gl-matrix
+	url = https://github.com/toji/gl-matrix.git
