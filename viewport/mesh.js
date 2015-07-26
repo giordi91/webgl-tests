@@ -29,6 +29,7 @@ function Mesh(gl, program, programBasic)
 
     //debug drawing
     self.__draw_tangents = false;
+    self.got_tans = false;
     self.__debug_tangents_u =null;
     self.__debug_tangents_v =null;
 
@@ -68,7 +69,7 @@ function Mesh(gl, program, programBasic)
         self.__spinner.stop();
 
         self.compute_tangets();
-        self.draw_tangents(false,1.0);
+        self.draw_tangents(true,1.0);
     }
 
     this.load_color_texture = function(path)
@@ -138,7 +139,7 @@ function Mesh(gl, program, programBasic)
             {
                 self.gl.disableVertexAttribArray(u_tan);
             }
-            if (self.__draw_tangents)
+            if (self.__draw_tangents && self.got_tans)
             {
                 self.programBasic.use(); 
                 var vPosition = self.program.getAttribLocation( "vPosition" );
@@ -186,19 +187,8 @@ function Mesh(gl, program, programBasic)
         var id1,id2,id3;
         //short hand variables for the vertices of the triangle
         var v1,v2,v3;
-        //delta vectors of the triangle
-        var d1,d2;
         //uvs and delta uvs variables
         var uv1, uv2,uv3;
-        var dUv1, dUv2;
-        //matrix variables
-        var qmat,inv;
-        //final normal tangetns variables
-        var vnorm,unorm;
-        
-        //matrix mult variables
-        var temp;
-        var accum;
         
         //short hand for the data  
         var indices = self.indices(); 
@@ -209,7 +199,7 @@ function Mesh(gl, program, programBasic)
         //the array
         self.u_tans = Array.apply(null, Array(v.length)).map(Number.prototype.valueOf,0);
         self.v_tans = Array.apply(null, Array(v.length)).map(Number.prototype.valueOf,0);
-
+        //creating the needed buffers 
         self.u_tans_bo= new Buffer(self.gl, self.gl.ARRAY_BUFFER);
         self.v_tans_bo= new Buffer(self.gl, self.gl.ARRAY_BUFFER);
 
@@ -235,35 +225,40 @@ function Mesh(gl, program, programBasic)
             
             self.__compute_vertex_tangent(id1,id2,id3,
                                           v1,v2,v3,
-                                          uv1,uv2,uv3, 
-                                          self.u_tans, self.v_tans);
+                                          uv1,uv2,uv3 
+                                          );
             
             
             self.__compute_vertex_tangent(id2,id3,id1,
                                           v2,v3,v1,
-                                          uv2,uv3,uv1, 
-                                          self.u_tans, self.v_tans);
+                                          uv2,uv3,uv1 
+                                          );
             
             
             self.__compute_vertex_tangent(id3,id1,id2,
                                           v3,v1,v2,
-                                          uv3,uv1,uv2, 
-                                          self.u_tans, self.v_tans);
+                                          uv3,uv1,uv2 
+                                          );
             
         } 
 
-        var n = [0,0,0];
+        var n;
         var r;
-        for (var i=0; i< v.length/3; i+=3)
+        for (var i=0; i< self.vertices().length/3; i++)
         {
            n = [self.u_tans[i*3],   
-             self.u_tans[i*3+1],
-             self.u_tans[i*3+2]];  
-           r = normalize(n);
+             self.u_tans[(i*3)+1],
+             self.u_tans[(i*3)+2]];  
            
+           r = normalize(n);
+           if (i ==600)
+            {
+                console.log(n,r);
+            }
+
            self.u_tans[i*3] = r[0];
-           self.u_tans[i*3+1] = r[1];
-           self.u_tans[i*3+2] = r[2];
+           self.u_tans[(i*3)+1] = r[1];
+           self.u_tans[(i*3)+2] = r[2];
 
            n = [self.v_tans[i*3],   
              self.v_tans[i*3+1],
@@ -283,7 +278,6 @@ function Mesh(gl, program, programBasic)
         self.u_tans_bo.upload(self.u_tans, "tans u");
         self.v_tans_bo.bind();
         self.v_tans_bo.upload(self.v_tans, "tans v");
-    
     }
     
     this.__compute_vertex_tangent = function (id1,id2,id3,v1,v2,v3,uv1,uv2,uv3)
@@ -304,8 +298,6 @@ function Mesh(gl, program, programBasic)
             //2x2 * 3x2 matrix
             var res = self.__2x3_mat_mult(inv,qmat);
             
-            unorm = normalize(res[0]);
-            vnorm = normalize(res[1]);
             //storing the data in the appropriate buffer position 
             self.u_tans[id1*3] += res[0][0];
             self.u_tans[id1*3+1] += res[0][1];
@@ -320,10 +312,12 @@ function Mesh(gl, program, programBasic)
     
     this.__2x3_mat_mult = function (inv,qmat)
     {
-        res= [[0,0,0],[0,0,0]]; 
+        var f= [[0,0,0],[0,0,0]]; 
+        var tmp;
+        var accum;
         for(r =0; r <2; r++)
         {
-            temp=[0,0,0];
+            tmp=[0,0,0];
             for (c=0; c<3; c++)
             {
                accum =0;
@@ -331,12 +325,12 @@ function Mesh(gl, program, programBasic)
                {
                     accum += inv[r][sr] * qmat[sr][c];   
                }
-            temp[c] = accum;
+            tmp[c] = accum;
             }
-            res[r]= temp;
+            f[r]= tmp;
 
         }
-        return res;
+        return f;
     
     }
     

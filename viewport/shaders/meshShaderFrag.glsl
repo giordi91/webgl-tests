@@ -32,9 +32,9 @@ vec3 phongModel(vec3 norm, vec3 diffR)
 {
     vec3 r= reflect(-LightDir, norm);
     
-    vec3 Ka = vec3 (0.6); // ambient reflection coefficient
+    vec3 Ka = vec3 (0.05); // ambient reflection coefficient
     vec3 Kd = vec3 (0.8); //diffuse  reflection coefficient
-    vec3 Ks = vec3 (0.7); //specular reflection coefficient
+    vec3 Ks = vec3 (0.6); //specular reflection coefficient
     vec3 ambient=  K*Ka;
     float sDotN = max(dot(LightDir,norm),0.0);
     vec3 diffuse = K * diffR * sDotN ;
@@ -47,7 +47,7 @@ vec3 phongModel(vec3 norm, vec3 diffR)
         spec = K * Ks * pow (max(dot(r,ViewDir),0.0), shiness);
     }
 
-    return  diffuse + spec;    
+    return ambient+ diffuse + spec;    
 }
 
 void
