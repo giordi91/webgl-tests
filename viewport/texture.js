@@ -1,6 +1,6 @@
 
 
-function Texture(gl, path)
+function Texture(gl, path, textureId)
 {
     var self = this;
     self.gl=gl;
@@ -8,6 +8,7 @@ function Texture(gl, path)
     self.id;
     self.img;
     self.loaded = false;
+    self.textureId = textureId
     this.init = function ()
     {
      self.id= gl.createTexture();
@@ -23,12 +24,13 @@ function Texture(gl, path)
         self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MAG_FILTER, self.gl.LINEAR);
         self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.LINEAR_MIPMAP_NEAREST);
         self.gl.generateMipmap(self.gl.TEXTURE_2D);
-        self.gl.activeTexture(self.gl.TEXTURE0);
+        
         self.loaded=true;
     }
 
     this.bind = function ()
     {
+        self.gl.activeTexture(self.gl.TEXTURE0 +self.textureId);
         self.gl.bindTexture(self.gl.TEXTURE_2D, self.id);
     }
 
