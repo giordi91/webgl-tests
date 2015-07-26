@@ -68,7 +68,7 @@ function Mesh(gl, program, programBasic)
         self.__spinner.stop();
 
         self.compute_tangets();
-        self.draw_tangents(true,1.0);
+        self.draw_tangents(false,1.0);
     }
 
     this.load_color_texture = function(path)
@@ -226,14 +226,71 @@ function Mesh(gl, program, programBasic)
             v2 = [ v[id2*3] , v[(id2*3)+1], v[(id2*3)+2]]; 
             v3 = [ v[id3*3] , v[(id3*3)+1], v[(id3*3)+2]]; 
 
-            //deltas
-            d1 = [v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]]; 
-            d2 = [v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]]; 
 
             //uvs
             uv1 = [uvs[id1*2], uvs[id1*2+1]]; 
             uv2 = [uvs[id2*2], uvs[id2*2+1]]; 
             uv3 = [uvs[id3*2], uvs[id3*2+1]]; 
+            
+            
+            self.__compute_vertex_tangent(id1,id2,id3,
+                                          v1,v2,v3,
+                                          uv1,uv2,uv3, 
+                                          self.u_tans, self.v_tans);
+            
+            
+            self.__compute_vertex_tangent(id2,id3,id1,
+                                          v2,v3,v1,
+                                          uv2,uv3,uv1, 
+                                          self.u_tans, self.v_tans);
+            
+            
+            self.__compute_vertex_tangent(id3,id1,id2,
+                                          v3,v1,v2,
+                                          uv3,uv1,uv2, 
+                                          self.u_tans, self.v_tans);
+            
+        } 
+
+        var n = [0,0,0];
+        var r;
+        for (var i=0; i< v.length/3; i+=3)
+        {
+           n = [self.u_tans[i*3],   
+             self.u_tans[i*3+1],
+             self.u_tans[i*3+2]];  
+           r = normalize(n);
+           
+           self.u_tans[i*3] = r[0];
+           self.u_tans[i*3+1] = r[1];
+           self.u_tans[i*3+2] = r[2];
+
+           n = [self.v_tans[i*3],   
+             self.v_tans[i*3+1],
+             self.v_tans[i*3+2]];  
+           r = normalize(n);
+           
+           self.v_tans[i*3] = r[0];
+           self.v_tans[i*3+1] = r[1];
+           self.v_tans[i*3+2] = r[2];
+        }
+
+
+        var t1 = performance.now(); 
+        console.log("Computing tangets took " + (t1 - t0) + " milliseconds.");
+        //upload data
+        self.u_tans_bo.bind();
+        self.u_tans_bo.upload(self.u_tans, "tans u");
+        self.v_tans_bo.bind();
+        self.v_tans_bo.upload(self.v_tans, "tans v");
+    
+    }
+    
+    this.__compute_vertex_tangent = function (id1,id2,id3,v1,v2,v3,uv1,uv2,uv3)
+    {
+            //deltas
+            d1 = [v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]]; 
+            d2 = [v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]]; 
 
             //delta uvs
             dUv1 = [uv2[0] - uv1[0], uv2[1] - uv1[1]] ;
@@ -245,48 +302,22 @@ function Mesh(gl, program, programBasic)
             
             //manually computing the matrix mult, no fucking package allowed a
             //2x2 * 3x2 matrix
-            /*
-            res= [[0,0,0],[0,0,0]]; 
-            for(r =0; r <2; r++)
-            {
-                temp=[0,0,0];
-                for (c=0; c<3; c++)
-                {
-                   accum =0;
-                    for (sr =0; sr<2;sr++)
-                   {
-                        accum += inv[r][sr] * qmat[sr][c];   
-                   }
-                temp[c] = accum;
-                }
-                res[r]= temp;
-
-            }
-            */
-            res = self.__2x3_mat_mult(inv,qmat);
-
-            //noramlizing the tangents
+            var res = self.__2x3_mat_mult(inv,qmat);
+            
             unorm = normalize(res[0]);
             vnorm = normalize(res[1]);
             //storing the data in the appropriate buffer position 
-            self.u_tans[id1*3] = unorm[0];
-            self.u_tans[id1*3+1] = unorm[1];
-            self.u_tans[id1*3+2] = unorm[2];
+            self.u_tans[id1*3] += res[0][0];
+            self.u_tans[id1*3+1] += res[0][1];
+            self.u_tans[id1*3+2] += res[0][2];
             
-            self.v_tans[id1*3] = vnorm[0];
-            self.v_tans[id1*3+1] = vnorm[1];
-            self.v_tans[id1*3+2] = vnorm[2];
-        } 
+            self.v_tans[id1*3] += res[1][0];
+            self.v_tans[id1*3+1] += res[1][1];
+            self.v_tans[id1*3+2] += res[1][2];
 
-        var t1 = performance.now(); 
-        console.log("Computing tangets took " + (t1 - t0) + " milliseconds.");
-        //upload data
-        self.u_tans_bo.bind();
-        self.u_tans_bo.upload(self.u_tans, "tans u");
-        self.v_tans_bo.bind();
-        self.v_tans_bo.upload(self.v_tans, "tans v");
-    
+        
     }
+    
     this.__2x3_mat_mult = function (inv,qmat)
     {
         res= [[0,0,0],[0,0,0]]; 

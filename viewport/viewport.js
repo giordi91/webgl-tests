@@ -82,7 +82,7 @@ function render() {
     
     program.setUniform3f("K", vec3(0.6,0.6,0.6));
     //program.setUniform3f("lightPosition", vec3(0,0,0));
-    program.setUniform1f("shiness", 100.0);
+    program.setUniform1f("shiness", 10.0);
 
     body.draw(); 
     
