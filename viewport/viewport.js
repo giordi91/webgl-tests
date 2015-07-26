@@ -54,7 +54,7 @@ window.onload = function init()
     programBasic.link(); 
 
     //loading the assets of the viewport
-    body = new Mesh(gl, program);  
+    body = new Mesh(gl, program, programBasic);  
     body.load_obj("http://192.168.0.200/temp_shit/body2.obj");
     //body.load_obj("objs/body2.obj");
     body.load_color_texture("textures/body_color.png");
