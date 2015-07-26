@@ -98,6 +98,11 @@ function GLSLProgram(gl)
     {
         return self.gl.getAttribLocation(self.program, name);
     }
-
+    this.setTextureToUnit = function (name , id)
+    {
+        var loc = self.gl.getUniformLocation(self.program, name);
+        self.gl.uniform1i(loc,id); 
+    
+    }
 
 }
