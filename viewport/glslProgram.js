@@ -63,7 +63,6 @@ function GLSLProgram(gl)
        return self.program; 
     }
 
-
     this.setMatrix4 =function (name, value)
     {
         var loc = gl.getUniformLocation(self.program, name);
@@ -80,6 +79,10 @@ function GLSLProgram(gl)
     {
         var loc = gl.getUniformLocation(self.program, name);
         self.gl.uniform4fv(loc,flatten(value));
+        if (self.gl.getError())
+        {
+            console.log("ERROR IN SETTING : ",name,value);
+        } 
     }
     
     this.setUniform3f =function (name, value)

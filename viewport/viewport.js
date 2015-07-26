@@ -58,6 +58,7 @@ window.onload = function init()
     body.load_obj("http://192.168.0.200/temp_shit/body2.obj");
     //body.load_obj("objs/body2.obj");
     body.load_color_texture("textures/body_color.png");
+    body.load_normal_texture("textures/body_normal.png");
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
     
@@ -78,9 +79,9 @@ function render() {
     program.setMatrix3("NormalM", camera.normal_matrix());
     
     //set materials attributres, will change in the future
-    program.setUniform4f("color", vec4(1,0,0,1));
-    program.setUniform4f("K", vec3(0.6,0.6,0.6,1));
-    program.setUniform3f("lightPosition", vec3(0,0,0));
+    
+    program.setUniform3f("K", vec3(0.6,0.6,0.6));
+    //program.setUniform3f("lightPosition", vec3(0,0,0));
     program.setUniform1f("shiness", 100.0);
 
     body.draw(); 

@@ -23,16 +23,17 @@ function Buffer(gl, buffer_type)
      * This function is used to upload the data on the buffer
      * Should be of tipe Float32Array or UInt16Array etc
      */
-    this.upload = function(data)
+    this.upload = function(data,debug)
     {
-        self.bind();
-        self.gl.bufferData( self.type, 
-                            flatten(data), 
-                            self.gl.STATIC_DRAW );
-        if(self.gl.getError())
-        {
-            console.log("ERROR IN UPLOADING DATA: " + self.type);
-        } 
+            self.bind();
+            self.gl.bufferData( self.type, 
+                                flatten(data), 
+                                self.gl.STATIC_DRAW );
+            var  error = self.gl.getError();
+            if(error)
+            {
+                console.log("ERROR IN UPLOADING DATA: " + debug);
+            }
     }
     
     this.uploadUInt16 = function(data)

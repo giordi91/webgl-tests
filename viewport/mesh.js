@@ -2,20 +2,30 @@
 function Mesh(gl, program, programBasic)
 {
     var self = this;
+    //webgl context and shader programs
     self.gl = gl;
     self.program  = program;
+    self.programBasic;
+    
+    //buffers, some of them are not created right away because 
+    //might no be used like the tangents one
     self.vbo= new Buffer(self.gl, self.gl.ARRAY_BUFFER);
     self.nbo= new Buffer(self.gl, self.gl.ARRAY_BUFFER  );
     self.idxbo= new Buffer(self.gl,self.gl.ELEMENT_ARRAY_BUFFER);
     self.uvbo= new Buffer(self.gl, self.gl.ARRAY_BUFFER);
-    self.u_tans_bo= new Buffer(self.gl, self.gl.ARRAY_BUFFER);
-    self.model_loaded = false;
-    self.__meshes={};
-    self.idx_size;
-    self.color_t = null;
+    self.u_tans_bo= null;
+    self.v_tans_bo= null;
     self.u_tans=null;
     self.v_tans=null;
-    self.programBasic;
+    
+    //textures
+    self.color_t = null;
+    self.normal_t = null; 
+
+    //internal variables
+    self.__model_loaded = false;
+    self.__meshes={};
+    self.__idx_size;
 
     //debug drawing
     self.__draw_tangents = false;
@@ -49,12 +59,12 @@ function Mesh(gl, program, programBasic)
         self.nbo.upload(m.vertexNormals);
         
         self.idxbo.bind();
-        self.idx_size = m.indices.length;
+        self.__idx_size = m.indices.length;
         self.idxbo.uploadUInt16(m.indices); 
         
         self.uvbo.bind();
         self.uvbo.upload(m.textures);
-        self.model_loaded = true;
+        self.__model_loaded = true;
         self.__spinner.stop();
 
         self.compute_tangets();
@@ -63,15 +73,20 @@ function Mesh(gl, program, programBasic)
 
     this.load_color_texture = function(path)
     {   
-        self.color_t = new Texture(self.gl, path);
+        self.color_t = new Texture(self.gl, path, 0);
         self.color_t.init(); 
+    }
 
+    this.load_normal_texture = function(path)
+    {
+        self.normal_t = new Texture(self.gl, path, 1);
+        self.normal_t.init(); 
     }
 
     this.draw = function()
     {
         
-        if(self.model_loaded)
+        if(self.__model_loaded)
         {
             self.vbo.bind();
             var vPosition = self.program.getAttribLocation( "vPosition" );
@@ -90,17 +105,39 @@ function Mesh(gl, program, programBasic)
                 var vUV = self.program.getAttribLocation( "vUV" );
                 self.gl.vertexAttribPointer( vUV,2, gl.FLOAT, false, 0, 0 );
                 self.gl.enableVertexAttribArray( vUV);
+
+                //set texture to samplers
+                self.program.setTextureToUnit("texColorS",0);
+            
             }
             
+            if (self.normal_t && self.normal_t.loaded && (self.u_tans && self.v_tans) &&
+                    self.u_tans_bo && self.v_tans_bo)
+            {
+                
+                self.u_tans_bo.bind(); 
+                var u_tan= self.program.getAttribLocation( "vTangentsU" );
+                self.gl.vertexAttribPointer( u_tan, 3, gl.FLOAT, false, 0, 0 );
+                self.gl.enableVertexAttribArray( u_tan );
+                 
+                self.normal_t.bind();
+                self.program.setTextureToUnit("texNormalS",1); 
+            }
+             
             self.idxbo.bind();
-            self.gl.drawElements(gl.TRIANGLES,self.idx_size, gl.UNSIGNED_SHORT,0);
+            self.gl.drawElements(gl.TRIANGLES,self.__idx_size, gl.UNSIGNED_SHORT,0);
             self.gl.disableVertexAttribArray(vNormal);
 
-            if (self.texture_loaded)
+            if (self.color_t && self.color_t.loaded)
             {
                 self.gl.disableVertexAttribArray(vUV);
             }
 
+            
+            if (self.normal_t && self.normal_t.loaded && (self.u_tans && self.v_tans))
+            {
+                self.gl.disableVertexAttribArray(u_tan);
+            }
             if (self.__draw_tangents)
             {
                 self.programBasic.use(); 
@@ -173,6 +210,9 @@ function Mesh(gl, program, programBasic)
         self.u_tans = Array.apply(null, Array(v.length)).map(Number.prototype.valueOf,0);
         self.v_tans = Array.apply(null, Array(v.length)).map(Number.prototype.valueOf,0);
 
+        self.u_tans_bo= new Buffer(self.gl, self.gl.ARRAY_BUFFER);
+        self.v_tans_bo= new Buffer(self.gl, self.gl.ARRAY_BUFFER);
+
         for(var i=0; i<self.__meshes["mesh"].indices.length/3;i++)
         {
 
@@ -205,6 +245,7 @@ function Mesh(gl, program, programBasic)
             
             //manually computing the matrix mult, no fucking package allowed a
             //2x2 * 3x2 matrix
+            /*
             res= [[0,0,0],[0,0,0]]; 
             for(r =0; r <2; r++)
             {
@@ -221,6 +262,8 @@ function Mesh(gl, program, programBasic)
                 res[r]= temp;
 
             }
+            */
+            res = self.__2x3_mat_mult(inv,qmat);
 
             //noramlizing the tangents
             unorm = normalize(res[0]);
@@ -237,8 +280,35 @@ function Mesh(gl, program, programBasic)
 
         var t1 = performance.now(); 
         console.log("Computing tangets took " + (t1 - t0) + " milliseconds.");
+        //upload data
+        self.u_tans_bo.bind();
+        self.u_tans_bo.upload(self.u_tans, "tans u");
+        self.v_tans_bo.bind();
+        self.v_tans_bo.upload(self.v_tans, "tans v");
+    
     }
+    this.__2x3_mat_mult = function (inv,qmat)
+    {
+        res= [[0,0,0],[0,0,0]]; 
+        for(r =0; r <2; r++)
+        {
+            temp=[0,0,0];
+            for (c=0; c<3; c++)
+            {
+               accum =0;
+                for (sr =0; sr<2;sr++)
+               {
+                    accum += inv[r][sr] * qmat[sr][c];   
+               }
+            temp[c] = accum;
+            }
+            res[r]= temp;
 
+        }
+        return res;
+    
+    }
+    
     this.draw_tangents = function(drawIt, size)
     {
         self.__draw_tangents = drawIt;
