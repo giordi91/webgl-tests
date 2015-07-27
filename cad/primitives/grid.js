@@ -19,23 +19,23 @@ function Grid(size,step, gl,program )
 
     this.init = function()
     {
-        for(i=-size; i<size+1; i++)
+        for(i=-self.size; i<self.size+1; i++)
         {
-           self.data.push(-self.size *step); 
+           self.data.push(-self.size *self.step); 
            self.data.push(0); 
-           self.data.push(i*step); 
+           self.data.push(i*self.step); 
 
-           self.data.push(self.size*step); 
+           self.data.push(self.size*self.step); 
            self.data.push(0); 
-           self.data.push(i*step); 
+           self.data.push(i*self.step); 
 
-           self.data.push(i*step); 
+           self.data.push(i*self.step); 
            self.data.push(0); 
-           self.data.push(-self.size*step); 
+           self.data.push(-self.size*self.step); 
 
-           self.data.push(i*step); 
+           self.data.push(i*self.step); 
            self.data.push(0); 
-           self.data.push(self.size*step); 
+           self.data.push(self.size*self.step); 
         }
         self.buffer.upload(self.data)
     }

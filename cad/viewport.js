@@ -41,8 +41,8 @@ window.onload = function init()
     //loading the shader for the mesh, more complex shader
     program = new GLSLProgram(gl);
     program.init();
-    program.loadShader("shaders/meshShaderVtx.glsl", gl.VERTEX_SHADER) 
-    program.loadShader("shaders/meshShaderFrag.glsl", gl.FRAGMENT_SHADER) 
+    program.loadShader("shaders/cadShaderVtx.glsl", gl.VERTEX_SHADER) 
+    program.loadShader("shaders/cadShaderFrag.glsl", gl.FRAGMENT_SHADER) 
     program.link(); 
     program.use();
    
@@ -63,7 +63,8 @@ window.onload = function init()
     */
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
-    
+    cube = new Cube(30,40,20, gl, program);    
+    cube.init();
     render();
 };
 
@@ -74,25 +75,25 @@ function render() {
     //camera matrix
     program.use();
     var projM = camera.projection_matrix(); 
-    program.setMatrix4("projM", projM);
+    //program.setMatrix4("projM", projM);
     var ModelViewM= camera.model_view_matrix();
-    program.setMatrix4("ModelViewM", camera.model_view_matrix());
+    //program.setMatrix4("ModelViewM", camera.model_view_matrix());
     program.setMatrix4("MVP", mult(projM,ModelViewM));
-    program.setMatrix3("NormalM", camera.normal_matrix());
+    //program.setMatrix3("NormalM", camera.normal_matrix());
     
     //set materials attributres, will change in the future
     
-    program.setUniform3f("K", vec3(0.6,0.6,0.6));
+    //program.setUniform3f("K", vec3(0.6,0.6,0.6));
     //program.setUniform3f("lightPosition", vec3(0,0,0));
-    program.setUniform1f("shiness", 10.0);
+    //program.setUniform1f("shiness", 10.0);
 
+    cube.draw();  
     //body.draw(); 
     
     //draw grid 
     programBasic.use(); 
     programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
     grid.draw();
-     
     //requesting next frame
     requestAnimFrame(render);
     //evaluating game inputs

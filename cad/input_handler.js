@@ -33,13 +33,12 @@ function Mouse(canvas, camera)
     
     this.move_event = function (e)
     {
-        console.log("mouse", e.button);
         //we are going to evaluate only if we have the mouse down and we are moving
         if(self.mouse_down)
         {
+            //legacy support of inputs 
             if( e.buttons == undefined)
             {
-                console.log("legacy mothafucka");
                 if (e.button== self.OLD_MOVE_BUTTON)
                 {
                     self.camera.move(e.pageX, e.pageY,true);
