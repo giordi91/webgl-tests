@@ -78,10 +78,17 @@ function temp_div(obj)
     attrs = get_attributes(obj);
     for (var a=0; a<attrs.length;a++)
     {
+        var div = document.createElement('div');
+        div.className += "cacca";
+
+        var pt = document.createElement('p');
+        pt.innerHTML= attrs[a].name;
         var slider= document.createElement('input');
         slider.id = attrs[a].name;
         slider.type= 'range';
-        document.getElementsByTagName('body')[0].appendChild(slider);
+        div.appendChild(pt);
+        div.appendChild(slider);
+        document.getElementsByTagName('body')[0].appendChild(div);
     }
 }
 
