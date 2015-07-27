@@ -35,7 +35,7 @@ window.onload = function init()
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
     gl.enable(gl.DEPTH_TEST);
-    
+    var ext = gl.getExtension('OES_standard_derivatives'); 
     
     //initialize shader programs
     //loading the shader for the mesh, more complex shader
