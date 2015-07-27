@@ -11,7 +11,7 @@ var touch_h;
 var body;
 var grid;
 var cube;
-
+var container;
 
 window.onload = function init()
 {
@@ -31,7 +31,12 @@ window.onload = function init()
     
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
-
+    
+    container = document.createElement("div");
+    container.className += "parentUi";
+    document.getElementsByTagName('body')[0].appendChild(container);    
+    
+    
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
@@ -66,29 +71,22 @@ window.onload = function init()
     grid.init();
     cube = new Cube(30,40,20, gl, program);    
     cube.init();
-    temp_div(cube);
+    var temp = new FloatSlider(container,cube, cube.width,"cacca",10);
+    temp.init();
+    //temp_div(cube);
     console.log(cube.sx.get());
     render();
 };
 
 function temp_div(obj)
 {
-
+    
     console.log("add");
     attrs = get_attributes(obj);
     for (var a=0; a<attrs.length;a++)
     {
-        var div = document.createElement('div');
-        div.className += "cacca";
-
-        var pt = document.createElement('p');
-        pt.innerHTML= attrs[a].name;
-        var slider= document.createElement('input');
-        slider.id = attrs[a].name;
-        slider.type= 'range';
-        div.appendChild(pt);
-        div.appendChild(slider);
-        document.getElementsByTagName('body')[0].appendChild(div);
+        var slide = new FloatSlider(container, attrs[a], "translate",0);  
+        slide.init();
     }
 }
 

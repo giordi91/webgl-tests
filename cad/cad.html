@@ -4,7 +4,18 @@
 
 <style>
 canvas{background:url("textures/bg3.jpg");background-size:   cover; }
-
+.parentUi{
+    float: right !important;
+    position: absolute;
+    top: 1%;
+    right: 50px;
+    border: 1px solid #000000;
+    padding: 0 50px 0 50px;
+    color: #ffffff;
+    height: 90%;
+    overflow: auto;
+    ;
+}
 </style>
 
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
@@ -22,6 +33,7 @@ canvas{background:url("textures/bg3.jpg");background-size:   cover; }
 <script type="text/javascript" src="primitives/cube.js"></script>
 <script type="text/javascript" src="glslProgram.js"></script>
 <script type="text/javascript" src="core.js"></script>
+<script type="text/javascript" src="ui/float_slider.js"></script>
 <script type="text/javascript" src="mesh.js"></script>
 <script type="text/javascript" src="texture.js"></script>
 <script type="text/javascript" src="viewport.js"></script>

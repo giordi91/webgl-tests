@@ -15,7 +15,8 @@ function Cube(width,height, depth, gl,program )
     self.gl = gl;
     
     //objects parameters
-    self.width= width;
+    self.width = new Attribute( AttrDisplay.FLOAT_FIELD, AttrCategory.BUILD, "width",10);
+    //self.width= width;
     self.height= height;
     self.depth= depth;
     self.h_width = width/2;
@@ -33,6 +34,11 @@ function Cube(width,height, depth, gl,program )
     
     this.init = function()
     {
+        self.h_width = self.width.get()/2;
+        self.h_height= height/2;
+        self.h_depth= depth/2;
+        self.data_bar = [];
+        self.data=[];
         //base points
         self.data.push(self.h_width,-self.h_height,self.h_depth);         
         self.data.push(self.h_width,-self.h_height,-self.h_depth);         
