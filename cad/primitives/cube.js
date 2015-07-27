@@ -22,12 +22,15 @@ function Cube(width,height, depth, gl,program )
     self.h_height= height/2;
     self.h_depth= depth/2;
     self.color = vec4(1,0,0,1);
+    //spacial parameters
+    generate_transform_attributes(self);
     
     //object data
     self.buffer = new Buffer(gl, gl.ARRAY_BUFFER);
     self.data = []; 
     self.buffer_bar = new Buffer(gl, gl.ARRAY_BUFFER) 
     self.data_bar =[];
+    
     this.init = function()
     {
         //base points
@@ -89,7 +92,7 @@ function Cube(width,height, depth, gl,program )
         {
             self.data_bar.push(1,0,0,0,1,0,0,0,1);
         }
-        console.log(self.data.length, self.data_bar.length);
+        
         self.buffer.upload(self.data);
         self.buffer_bar.upload(self.data_bar);
     }

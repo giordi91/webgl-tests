@@ -10,6 +10,7 @@ var touch_h;
 
 var body;
 var grid;
+var cube;
 
 
 window.onload = function init()
@@ -65,9 +66,24 @@ window.onload = function init()
     grid.init();
     cube = new Cube(30,40,20, gl, program);    
     cube.init();
+    temp_div(cube);
+    console.log(cube.sx.get());
     render();
 };
 
+function temp_div(obj)
+{
+
+    console.log("add");
+    attrs = get_attributes(obj);
+    for (var a=0; a<attrs.length;a++)
+    {
+        var slider= document.createElement('input');
+        slider.id = attrs[a].name;
+        slider.type= 'range';
+        document.getElementsByTagName('body')[0].appendChild(slider);
+    }
+}
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
@@ -89,7 +105,6 @@ function render() {
 
     cube.draw();  
     //body.draw(); 
-    
     //draw grid 
     programBasic.use(); 
     programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
