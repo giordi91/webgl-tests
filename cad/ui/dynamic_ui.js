@@ -2,6 +2,7 @@
 //and the corrisponding widget
 __WIDGET_MAPPING ={};
 __WIDGET_MAPPING[AttrDisplay.FLOAT_SLIDER] = FloatSlider;                    
+__WIDGET_MAPPING[AttrDisplay.FLOAT_FIELD3] = FloatFieldArray;
 
 /*
  * THis class is the dynamic ui that will be in charge of creating
@@ -28,10 +29,11 @@ function DynamicUi()
      */
     this.setObjectActive = function (obj)
     {
-       //setting the object as active and calling the refresh
+        //setting the object as active and calling the refresh
         self.__current_obj = obj; 
-       self.refresh();
+        self.refresh();
     }
+    
     /*
      * this function clears the whole content of the box
      */
@@ -50,9 +52,16 @@ function DynamicUi()
         
         //lets query the BUILD attributes
         attrs = get_attributes(self.__current_obj, AttrCategory.BUILD);  
-        var obj;
+        self.__process_attrs(attrs);
         
-        //looping them and create the object
+        //lets process the transforms;
+        attrs = get_attributes(self.__current_obj, AttrCategory.TRANSFORM);  
+        self.__process_attrs(attrs);
+    }
+
+    this.__process_attrs = function(attrs)
+    {
+        var obj;
         for( var a in attrs)
         {
             //getting the function pointer for the corresponding widget
@@ -63,6 +72,7 @@ function DynamicUi()
                     attrs[a]); 
             obj.init();
         }
+        
     }
 
 }

@@ -1,11 +1,11 @@
 var AttrDisplay= {
   FLOAT_FIELD: 1,
-  FLOAT_SLIDER: 2,
-  CACCA: 3,
+  FLOAT_FIELD3:2,
+  FLOAT_SLIDER: 3,
   properties: {
     1: {name: "floatField", value: 1, code: "ff"},
-    2: {name: "floatSlider", value: 2, code: "fs"},
-    3: {name: "cacca", value: 3, code: "c"}
+    2: {name: "floaField3", value: 3, code: "ff3"},
+    3: {name: "floatSlider", value: 2, code: "fs"}
   }
 };
 
@@ -41,6 +41,26 @@ function Attribute(display_type, category, name, value )
     }
 }
 
+function AttributeCompound(display_type, category, name, size, values)
+{
+    var self= this;
+    this.display_type = display_type;
+    this.category = category;
+    this.name = name;
+    this.is_attribute = true;
+    this.value = values;
+    this.size = size;
+
+    this.set = function(value)
+    {
+        self.value = value;
+    }
+
+    this.get = function(value)
+    {
+        return self.value;
+    }
+}
 
 function get_attributes(obj, category)
 {
@@ -76,6 +96,14 @@ function get_attributes(obj, category)
 
 function generate_transform_attributes(obj)
 {
+    obj.t= new AttributeCompound( AttrDisplay.FLOAT_FIELD3, AttrCategory.TRANSFORM, 
+                                 "Translate",3,[0,0,0]);    
+    
+    obj.r= new AttributeCompound( AttrDisplay.FLOAT_FIELD3, AttrCategory.TRANSFORM, 
+                                 "Rotate",3,[0,0,0]);    
+    obj.s= new AttributeCompound( AttrDisplay.FLOAT_FIELD3, AttrCategory.TRANSFORM, 
+                                 "Scale",3,[1,1,1]);    
+    /*
     obj.tx= new Attribute( AttrDisplay.FLOAT_FIELD, AttrCategory.TRANSFORM, "TranslateX",0.0);    
     obj.ty= new Attribute( AttrDisplay.FLOAT_FIELD, AttrCategory.TRANSFORM, "TranslateY",0.0);    
     obj.tz= new Attribute( AttrDisplay.FLOAT_FIELD, AttrCategory.TRANSFORM, "TranslateZ",0.0);    
@@ -85,5 +113,5 @@ function generate_transform_attributes(obj)
     obj.sx= new Attribute( AttrDisplay.FLOAT_FIELD, AttrCategory.TRANSFORM, "ScaleX",1.0);    
     obj.sy= new Attribute( AttrDisplay.FLOAT_FIELD, AttrCategory.TRANSFORM, "ScaleY",1.0);    
     obj.sz= new Attribute( AttrDisplay.FLOAT_FIELD, AttrCategory.TRANSFORM, "ScaleZ",1.0);    
-
+    */
 }

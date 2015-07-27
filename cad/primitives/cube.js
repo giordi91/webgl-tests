@@ -104,6 +104,10 @@ function Cube(width,height, depth, gl,program )
         self.buffer_bar.upload(self.data_bar);
     }
 
+    this.update_position= function()
+    {
+        console.log("updatind position");
+    }
     this.draw = function()
     {
         self.program.use()
