@@ -1,21 +1,21 @@
 var AttrDisplay= {
   FLOAT_FIELD: 1,
-  BUBU: 2,
+  FLOAT_SLIDER: 2,
   CACCA: 3,
   properties: {
     1: {name: "floatField", value: 1, code: "ff"},
-    2: {name: "bubu", value: 2, code: "b"},
+    2: {name: "floatSlider", value: 2, code: "fs"},
     3: {name: "cacca", value: 3, code: "c"}
   }
 };
 
 var AttrCategory= {
   TRANSFORM: 1,
-  BUBU: 2,
+  BUILD: 2,
   CACCA: 3,
   properties: {
     1: {name: "transform", value: 1, code: "tr"},
-    2: {name: "bubu", value: 2, code: "b"},
+    2: {name: "build", value: 2, code: "b"},
     3: {name: "cacca", value: 3, code: "c"}
   }
 };
@@ -42,7 +42,7 @@ function Attribute(display_type, category, name, value )
 }
 
 
-function get_attributes(obj)
+function get_attributes(obj, category)
 {
     //lets get all the keys
     var keys = Object.keys(obj);
@@ -59,7 +59,14 @@ function get_attributes(obj)
         
         if ((attr.is_attribute != undefined)  && attr.is_attribute)
         {
-            finals.push(attr);
+            if (category== undefined)
+            {
+                finals.push(attr);
+            }
+            else if ( attr.category == category) 
+            {
+                finals.push(attr); 
+            }
         }
     }
     return finals;

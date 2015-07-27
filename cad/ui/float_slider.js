@@ -1,12 +1,10 @@
 
 
-function FloatSlider(parentDiv ,obj, property, name, defaultValue)
+function FloatSlider(parentDiv ,obj, property )
 {
     var self = this;
     self.property= property;
-    self.name = name;
     self.obj = obj;
-    self.defaultValue = defaultValue;
     self.parentDiv = parentDiv;
     self.__div;
     self.__pt;
@@ -19,14 +17,18 @@ function FloatSlider(parentDiv ,obj, property, name, defaultValue)
         self.__div.className += "FLOAT_SLIDER";
 
         self.__pt = document.createElement('p');
-        self.__pt.innerHTML= self.property.name;
+        self.__pt.innerHTML= self.property.name +": ";
         self.__slider= document.createElement('input');
         self.__slider.id = self.property.name;
         self.__slider.type= 'range';
+        self.__slider.max= 100;
+        self.__slider.min= 0;
+        self.__slider.value= self.property.get();
+
         self.__div.appendChild(self.__pt);
-        self.__div.appendChild(self.__slider);
+        self.__pt.appendChild(self.__slider);
         self.parentDiv.appendChild(self.__div);    
-        self.__slider.onchange = self.onchange; 
+        self.__slider.oninput= self.onchange; 
     }
     
     this.onchange = function()
