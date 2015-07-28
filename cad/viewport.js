@@ -69,6 +69,7 @@ window.onload = function init()
     grid.init();
     cube = new Cube(30,40,20, gl, program);    
     cube.init();
+    cube.translate_matrix();
     container.setObjectActive(cube);
     
     render();

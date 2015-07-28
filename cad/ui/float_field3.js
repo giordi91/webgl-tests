@@ -16,7 +16,8 @@ function FloatFieldArray(parentDiv ,obj, property)
     self.property= property;
     self.obj = obj;
     self.parentDiv = parentDiv;
-    
+    self.step = self.property.step; 
+    self.__callback = self.property.callback;
     //private data
     self.__div;
     self.__pt;
@@ -42,7 +43,7 @@ function FloatFieldArray(parentDiv ,obj, property)
             slider= document.createElement('input');
             slider.id = self.property.name;
             slider.type= 'number';
-            slider.step =0.1;
+            slider.step = String(self.step);
             slider.value= self.property.get()[i];
             
             br= document.createElement('br');
@@ -75,6 +76,6 @@ function FloatFieldArray(parentDiv ,obj, property)
         //once all the data is built we pass it ot the property
         self.property.set(data);
         //lets call the wanted function
-        self.obj.update_position();
+        self.__callback();
     }
 }

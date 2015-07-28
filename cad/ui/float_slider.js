@@ -6,13 +6,14 @@
  * @param obj: the object we want to display the property of
  * @param property: AttributeCompound, an instance of the property to display
  */
-function FloatSlider(parentDiv ,obj, property )
+function FloatSlider(parentDiv ,obj, property)
 {
     var self = this;
     //storing inpunt
     self.property= property;
     self.obj = obj;
     self.parentDiv = parentDiv;
+    self.__callback = self.property.callback;
     
     //internal data
     self.__div;
@@ -51,6 +52,6 @@ function FloatSlider(parentDiv ,obj, property )
     this.onchange = function()
     { 
         self.property.set(self.__slider.value);
-        self.obj.init();
+        self.__callback();
     }
 }
