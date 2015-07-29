@@ -6,18 +6,19 @@
  * @param gl: the initialized gl contest
  * @param program: the program with the shader linked to it
  */
-function Cube(width,height, depth, gl,program )
+function Cube(gl,program )
 {
     var self = this;
-    
+    self.TYPE = "cube";
+    //by default selection color is black, like the background,means it will 
+    //be invisible, the color will be filled in by the factory, no public interface
+    //is offered for this
+    self.SELECTION_COLOR = [0,0,0];
     //webgl components
     self.program = program;
     self.gl = gl;
     
     
-    self.h_width = width/2;
-    self.h_height= height/2;
-    self.h_depth= depth/2;
     self.color = vec4(1,0,0,1);
     //spacial parameters
     self.__model_matrix = mat4();
@@ -30,65 +31,65 @@ function Cube(width,height, depth, gl,program )
     
     this.init = function()
     {
-        self.h_width = self.width.get()/2;
-        self.h_height= self.height.get()/2;
-        self.h_depth= self.depth.get()/2;
+        var h_width = self.width.get()/2;
+        var h_height= self.height.get()/2;
+        var h_depth= self.depth.get()/2;
         
         self.data_bar = [];
         self.data=[];
         //base points
-        self.data.push(self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(self.h_width,-self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width,-self.h_height,-self.h_depth);         
+        self.data.push(h_width,-h_height,h_depth);         
+        self.data.push(h_width,-h_height,-h_depth);         
+        self.data.push(-h_width,-h_height,-h_depth);         
 
-        self.data.push(self.h_width, -self.h_height,self.h_depth);         
-        self.data.push(-self.h_width,-self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width,-self.h_height,self.h_depth);         
+        self.data.push(h_width, -h_height,h_depth);         
+        self.data.push(-h_width,-h_height,-h_depth);         
+        self.data.push(-h_width,-h_height,h_depth);         
         
         //top poings
-        self.data.push(self.h_width,self.h_height,self.h_depth);         
-        self.data.push(self.h_width,self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,-self.h_depth);         
+        self.data.push(h_width,h_height,h_depth);         
+        self.data.push(h_width,h_height,-h_depth);         
+        self.data.push(-h_width,h_height,-h_depth);         
 
-        self.data.push(self.h_width, self.h_height,self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,self.h_depth);         
+        self.data.push(h_width, h_height,h_depth);         
+        self.data.push(-h_width,h_height,-h_depth);         
+        self.data.push(-h_width,h_height,h_depth);         
         //left face
          
-        self.data.push(self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(self.h_width,-self.h_height,-self.h_depth);         
-        self.data.push(self.h_width, self.h_height,-self.h_depth);         
+        self.data.push(h_width,-h_height,h_depth);         
+        self.data.push(h_width,-h_height,-h_depth);         
+        self.data.push(h_width, h_height,-h_depth);         
         
-        self.data.push(self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(self.h_width,self.h_height,-self.h_depth);         
-        self.data.push(self.h_width, self.h_height,self.h_depth);         
+        self.data.push(h_width,-h_height,h_depth);         
+        self.data.push(h_width,h_height,-h_depth);         
+        self.data.push(h_width, h_height,h_depth);         
         
         //right face 
-        self.data.push(-self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(-self.h_width,-self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width, self.h_height,-self.h_depth);         
+        self.data.push(-h_width,-h_height,h_depth);         
+        self.data.push(-h_width,-h_height,-h_depth);         
+        self.data.push(-h_width, h_height,-h_depth);         
         
-        self.data.push(-self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width, self.h_height,self.h_depth);         
+        self.data.push(-h_width,-h_height,h_depth);         
+        self.data.push(-h_width,h_height,-h_depth);         
+        self.data.push(-h_width, h_height,h_depth);         
 
         //back face
-        self.data.push(self.h_width,-self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width,-self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,-self.h_depth);         
+        self.data.push(h_width,-h_height,-h_depth);         
+        self.data.push(-h_width,-h_height,-h_depth);         
+        self.data.push(-h_width,h_height,-h_depth);         
 
-        self.data.push(self.h_width,-self.h_height,-self.h_depth);         
-        self.data.push(self.h_width,self.h_height,-self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,-self.h_depth);         
+        self.data.push(h_width,-h_height,-h_depth);         
+        self.data.push(h_width,h_height,-h_depth);         
+        self.data.push(-h_width,h_height,-h_depth);         
         
         //front face
-        self.data.push(self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(-self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,self.h_depth);         
+        self.data.push(h_width,-h_height,h_depth);         
+        self.data.push(-h_width,-h_height,h_depth);         
+        self.data.push(-h_width,h_height,h_depth);         
 
-        self.data.push(self.h_width,-self.h_height,self.h_depth);         
-        self.data.push(self.h_width,self.h_height,self.h_depth);         
-        self.data.push(-self.h_width,self.h_height,self.h_depth);         
+        self.data.push(h_width,-h_height,h_depth);         
+        self.data.push(h_width,h_height,h_depth);         
+        self.data.push(-h_width,h_height,h_depth);         
         
         //generatinc baricentric fake coordinate for wireframe
         for (var i=0; i<self.data.length/9;i++)
@@ -126,19 +127,19 @@ function Cube(width,height, depth, gl,program )
 
     this.set_width = function(value)
     {
-        self.width = value;
+        self.width.set (value);
         self.init();
     }
     
     this.set_heigth= function(value)
     {
-        self.height= value;
+        self.height.set( value);
         self.init();
     }
     
     this.set_depth= function(value)
     {
-        self.depth= value;
+        self.depth.set(value);
         self.init();
     }
     
@@ -182,8 +183,11 @@ function Cube(width,height, depth, gl,program )
     //end but I am passing a callback function (update position) that needs to be defined
     //before I can it
     generate_transform_attributes(self);
+
     //objects parameters
     self.width = new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "width",10, self.init);
     self.height= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "height",10,self.init);
     self.depth= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "depth",10,self.init);
 }
+
+

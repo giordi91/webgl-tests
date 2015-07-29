@@ -107,5 +107,4 @@ function GLSLProgram(gl)
         self.gl.uniform1i(loc,id); 
     
     }
-
 }

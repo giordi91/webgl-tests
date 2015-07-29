@@ -41,37 +41,15 @@ window.onload = function init()
     gl.enable(gl.DEPTH_TEST);
     var ext = gl.getExtension('OES_standard_derivatives'); 
     
-    //initialize shader programs
-    //loading the shader for the mesh, more complex shader
-    program = new GLSLProgram(gl);
-    program.init();
-    program.loadShader("shaders/cadShaderVtx.glsl", gl.VERTEX_SHADER) 
-    program.loadShader("shaders/cadShaderFrag.glsl", gl.FRAGMENT_SHADER) 
-    program.link(); 
-    program.use();
-   
-    //loading shader for solid drawing like the grid 
-    programBasic = new GLSLProgram(gl);
-    programBasic.init();
-    programBasic.loadShader("shaders/basicShaderVtx.glsl", gl.VERTEX_SHADER) 
-    programBasic.loadShader("shaders/basicShaderFrag.glsl", gl.FRAGMENT_SHADER) 
-    programBasic.link(); 
+    initializeShaderPrograms(); 
 
-    //loading the assets of the viewport
-    /*
-    body = new Mesh(gl, program, programBasic);  
-    body.load_obj("http://192.168.0.200/temp_shit/body2.obj");
-    //body.load_obj("objs/body2.obj");
-    body.load_color_texture("textures/body_color.png");
-    body.load_normal_texture("textures/body_normal.png");
-    */
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
-    cube = new Cube(30,40,20, gl, program);    
-    cube.init();
-    cube.translate_matrix();
-    container.setObjectActive(cube);
     
+    factory = new PrimFactory(gl, program, selectionProgram);
+    cube = factory.generate("cube","cube1");
+    cube2 = factory.generate("cube", "cube2");
+    container.setObjectActive(cube2);
     render();
 };
 
@@ -93,8 +71,8 @@ function render() {
     //program.setUniform3f("K", vec3(0.6,0.6,0.6));
     //program.setUniform3f("lightPosition", vec3(0,0,0));
     //program.setUniform1f("shiness", 10.0);
-
-    cube.draw();  
+    factory.draw();
+    //cube.draw();  
     //body.draw(); 
     //draw grid 
     programBasic.use(); 
@@ -106,5 +84,28 @@ function render() {
     gamepad_input();
 }
 
+function initializeShaderPrograms()
+{
 
+    //initialize shader programs
+    //loading the shader for the mesh, more complex shader
+    program = new GLSLProgram(gl);
+    program.init();
+    program.loadShader("shaders/cadShaderVtx.glsl", gl.VERTEX_SHADER) 
+    program.loadShader("shaders/cadShaderFrag.glsl", gl.FRAGMENT_SHADER) 
+    program.link(); 
+    program.use();
+   
+    //loading shader for solid drawing like the grid 
+    programBasic = new GLSLProgram(gl);
+    programBasic.init();
+    programBasic.loadShader("shaders/basicShaderVtx.glsl", gl.VERTEX_SHADER) 
+    programBasic.loadShader("shaders/basicShaderFrag.glsl", gl.FRAGMENT_SHADER) 
+    programBasic.link(); 
 
+    selectionProgram = new GLSLProgram(gl);
+    selectionProgram.init();
+    selectionProgram.loadShader("shaders/cadShaderVtx.glsl",gl.VERTEX_SHADER);
+    selectionProgram.loadShader("shaders/selectionFrag.glsl",gl.FRAGMENT_SHADER);
+    selectionProgram.link();
+}
