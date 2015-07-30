@@ -22,6 +22,7 @@ function RenderBuffer(gl,width,height )
         self.bindFrame();
         self.gl.framebufferTexture2D(self.gl.FRAMEBUFFER, self.gl.COLOR_ATTACHMENT0,
                 self.gl.TEXTURE_2D, self.tx.id,0);
+        self.tx.unbind();
         //self.bindRender();
         //self.gl.renderbufferStorage(self.type, self.gl.DEPTH_COMPONENT16,
          //      self.width,self.height); 

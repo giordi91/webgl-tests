@@ -29,9 +29,9 @@ function Texture(gl, path, textureId)
         self.bind();
         self.gl.texImage2D(self.gl.TEXTURE_2D, 0, self.gl.RGBA, width, height,
                    0, self.gl.RGBA, self.gl.UNSIGNED_BYTE, null);
-        self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MAG_FILTER, self.gl.LINEAR);
-        self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.LINEAR_MIPMAP_NEAREST);
-        self.gl.bindTexture(gl.TEXTURE_2D, null);
+        self.gl.generateMipmap(self.gl.TEXTURE_2D);
+        self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MAG_FILTER, self.gl.NEAREST);
+        self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.NEAREST_MIPMAP_LINEAR);
         //self.gl.generateMipmap(self.gl.TEXTURE_2D);
         self.unbind();
     
@@ -55,6 +55,7 @@ function Texture(gl, path, textureId)
     this.unbind = function()
     {
         self.gl.bindTexture(self.gl.TEXTURE_2D,null);
+        console.log("deactivating texture");
     }
 
 
