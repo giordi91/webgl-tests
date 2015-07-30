@@ -1,10 +1,11 @@
 
 
-function Mouse(canvas, camera)
+function Mouse(canvas, camera, factory)
 {
     var self= this;
     this.canvas = canvas;
     this.camera = camera;
+    self.factory =factory;
     
     this.MOVE_BUTTON =4;
     this.ROTATE_BUTTON =1;
@@ -23,9 +24,11 @@ function Mouse(canvas, camera)
         //setting up the webgl window, mostly mouse triggers
         self.canvas.oncontextmenu = function () {return false;};
         self.canvas.onmousedown= function(e) { 
-                                            self.camera.old_x = e.pageX;
-                                            self.camera.old_y = e.pageY;
-                                            self.mouse_down=true;};
+
+            self.factory.object_at_pixel(e.pageX, e.pageY);
+            self.camera.old_x = e.pageX;
+            self.camera.old_y = e.pageY;
+            self.mouse_down=true;};
 
         self.canvas.onmouseup = function() {self.mouse_down=false;};
         self.canvas.onmousemove = self.move_event;

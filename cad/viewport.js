@@ -15,6 +15,23 @@ var container;
 
 window.onload = function init()
 {
+    gl = WebGLUtils.setupWebGL( canvas );
+    if ( !gl ) { alert( "WebGL isn't available" ); }
+    //  Configure WebGL
+    gl.viewport( 0, 0, canvas.width, canvas.height );
+    gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
+    gl.enable(gl.DEPTH_TEST);
+    var ext = gl.getExtension('OES_standard_derivatives'); 
+    initializeShaderPrograms(); 
+    
+    container = new DynamicUi();
+    container.init(); 
+    
+    factory = new PrimFactory(gl, program, selectionProgram);
+    cube = factory.generate("cube","cube1");
+    cube2 = factory.generate("cube", "cube2");
+    container.setObjectActive(cube2);
+    
     //initializeing the camera
     camera = new Camera(canvas.width, canvas.height);
      
@@ -25,31 +42,18 @@ window.onload = function init()
     }    
     else
     {
-       mouse_h = new Mouse(canvas, camera);
+       mouse_h = new Mouse(canvas, camera,factory);
        mouse_h.init();
     }
     
-    gl = WebGLUtils.setupWebGL( canvas );
-    if ( !gl ) { alert( "WebGL isn't available" ); }
     
-    container = new DynamicUi();
-    container.init(); 
     
-    //  Configure WebGL
-    gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
-    gl.enable(gl.DEPTH_TEST);
-    var ext = gl.getExtension('OES_standard_derivatives'); 
     
-    initializeShaderPrograms(); 
 
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
     
-    factory = new PrimFactory(gl, program, selectionProgram);
-    cube = factory.generate("cube","cube1");
-    cube2 = factory.generate("cube", "cube2");
-    container.setObjectActive(cube2);
+
     render();
 };
 

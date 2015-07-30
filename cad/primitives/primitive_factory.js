@@ -17,6 +17,10 @@ function PrimFactory(gl,program, selectionProgram)
     self.color_to_data= {}; 
     self.name_to_data = {}; 
     self.colors={};
+    self.bf = new RenderBuffer(self.gl,100,100); 
+    self.bf.init();
+    self.bf.is_complete();
+    self.bf.unbind();
 
     this.__getRandomColor = function () {
         var letters = '0123456789ABCDEF'.split('');
