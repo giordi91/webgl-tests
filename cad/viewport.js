@@ -15,7 +15,7 @@ var container;
 
 window.onload = function init()
 {
-    gl = WebGLUtils.setupWebGL( canvas );
+    gl = WebGLUtils.setupWebGL( canvas  );
     if ( !gl ) { alert( "WebGL isn't available" ); }
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
@@ -26,14 +26,14 @@ window.onload = function init()
     
     container = new DynamicUi();
     container.init(); 
+    //initializeing the camera
+    camera = new Camera(canvas.width, canvas.height);
     
-    factory = new PrimFactory(gl, program, selectionProgram);
+    factory = new PrimFactory(gl, program, selectionProgram,camera,canvas.width, canvas.height);
     cube = factory.generate("cube","cube1");
     cube2 = factory.generate("cube", "cube2");
     container.setObjectActive(cube2);
     
-    //initializeing the camera
-    camera = new Camera(canvas.width, canvas.height);
      
     if(typeof window.orientation !== 'undefined')
     {

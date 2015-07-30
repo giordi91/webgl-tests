@@ -106,23 +106,39 @@ function Cube(gl,program )
     {
         self.__model_matrix = self.model_matrix();
     }
-    this.draw = function()
+    this.draw = function(selection, selectionProgram)
     {
-        self.program.use()
-        self.program.setMatrix4("modelM",self.__model_matrix);
-        self.buffer.bind(); 
-        vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
-        self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
-        self.gl.enableVertexAttribArray( vPosition );
-        
-        self.buffer_bar.bind(); 
-        vBC = self.gl.getAttribLocation( self.program.get(), "vBC" );
-        self.gl.vertexAttribPointer( vBC, 3, self.gl.FLOAT, false, 0, 0 );
-        self.gl.enableVertexAttribArray( vBC);
+        if (!selection)
+        {
+            self.program.use()
+            self.program.setMatrix4("modelM",self.__model_matrix);
+            self.buffer.bind(); 
+            vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
+            self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
+            self.gl.enableVertexAttribArray( vPosition );
+            
+             
+            self.buffer_bar.bind(); 
+            vBC = self.gl.getAttribLocation( self.program.get(), "vBC" );
+            self.gl.vertexAttribPointer( vBC, 3, self.gl.FLOAT, false, 0, 0 );
+            self.gl.enableVertexAttribArray( vBC);
+            
 
-
-        self.program.setUniform4f("color",self.color);
-        self.gl.drawArrays( self.gl.TRIANGLES, 0, self.data.length/3 );
+            self.program.setUniform4f("color",self.color);
+            self.gl.drawArrays( self.gl.TRIANGLES, 0, self.data.length/3 );
+        }
+        else
+        {
+            selectionProgram.setMatrix4("modelM",self.__model_matrix);
+            self.buffer.bind(); 
+            vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
+            self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
+            self.gl.enableVertexAttribArray( vPosition );
+            
+            selectionProgram.setUniform4f("color",self.SELECTION_COLOR);
+            self.gl.drawArrays( self.gl.TRIANGLES, 0, self.data.length/3 );
+            
+        }
     }
 
     this.set_width = function(value)

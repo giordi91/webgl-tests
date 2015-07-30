@@ -8,7 +8,7 @@ __SHAPES ={ "cube" : Cube};
  * @param program: the program used for regular rendering
  * @param selectionProgram: the program used or render the selection frame
  */
-function PrimFactory(gl,program, selectionProgram)
+function PrimFactory(gl,program, selectionProgram,camera,width,height)
 {
     var self = this;
     self.gl = gl;
@@ -17,10 +17,14 @@ function PrimFactory(gl,program, selectionProgram)
     self.color_to_data= {}; 
     self.name_to_data = {}; 
     self.colors={};
-    self.bf = new RenderBuffer(self.gl,100,100); 
+    self.width = width;
+    self.height = height;
+    console.log(self.width, self.height);
+    self.bf = new RenderBuffer(self.gl,width,height); 
     self.bf.init();
     self.bf.is_complete();
     self.bf.unbind();
+    self.camera = camera;
 
     this.__getRandomColor = function () {
         var letters = '0123456789ABCDEF'.split('');
@@ -70,13 +74,30 @@ function PrimFactory(gl,program, selectionProgram)
     {
         for (v in self.name_to_data)
         {
-            self.name_to_data[v].draw();
+            self.name_to_data[v].draw(false);
         }
     }
     
     this.object_at_pixel = function (x,y)
     {
         console.log("mmmm lets seee what we got here");
+        self.bf.bind();
+        self.bf.tx.bind();
+        self.bf.__check_error();
+        self.gl.clear(self.gl.COLOR_BUFFER_BIT);
+        self.selectionProgram.use();
+        var projM = self.camera.projection_matrix(); 
+        var ModelViewM= self.camera.model_view_matrix();
+        self.selectionProgram.setMatrix4("MVP", mult(projM,ModelViewM));
+        for (v in self.name_to_data)
+        {
+            self.name_to_data[v].draw(true,self.selectionProgram);
+        }
+        var color= new Uint8Array(4);
+        console.log(x,self.height-y);
+        self.gl.readPixels(x, self.height-y,1,1,self.gl.RGBA,self.gl.UNSIGNED_BYTE,color); 
+        console.log(color);
+        self.bf.unbind();
     }
 }
 

@@ -13,37 +13,52 @@ function RenderBuffer(gl,width,height )
     self.type = gl.RENDERBUFFER;
     self.width = width;
     self.height = height;
+    self.tx = new Texture(self.gl,null,0);
+    self.tx.init2(self.width, self.height);
     
     this.init = function()
     {
+        self.tx.bind(); 
         self.bindFrame();
-        self.bindRender();
-        self.gl.renderbufferStorage(self.type, self.gl.DEPTH_COMPONENT16,
-               self.width,self.height); 
+        self.gl.framebufferTexture2D(self.gl.FRAMEBUFFER, self.gl.COLOR_ATTACHMENT0,
+                self.gl.TEXTURE_2D, self.tx.id,0);
+        //self.bindRender();
+        //self.gl.renderbufferStorage(self.type, self.gl.DEPTH_COMPONENT16,
+         //      self.width,self.height); 
+        //self.__check_error(); 
+        //self.gl.framebufferRenderbuffer(self.gl.FRAMEBUFFER, self.gl.DEPTH_ATTACHMENT,
+         //       self.type, self.idRender);
+       // self.__check_error(); 
     }  
 
     /*
      * This function binds the buffer
      */
+    this.bind = function()
+    {
+        self.tx.bind();
+        self.bindFrame();
+        //self.bindRender();
+    }
     this.bindFrame = function()
     {
         self.gl.bindFramebuffer(self.gl.FRAMEBUFFER, self.idFrame);
         self.idFrame.width = self.width;
         self.idFrame.height= self.height;
     }
-
+    
     this.bindRender = function()
     {
         self.gl.bindRenderbuffer(self.type, self.idRender);
-        self.gl.framebufferRenderbuffer(self.gl.FRAMEBUFFER, self.gl.DEPTH_ATTACHMENT,
-                self.type, self.idRender);
+        self.__check_error(); 
     }
     
     this.is_complete = function()
     {
         self.bindFrame();
-        self.bindRender();
+        //self.bindRender();
         var stat = self.gl.checkFramebufferStatus(self.gl.FRAMEBUFFER);
+        self.__check_error();
         if (stat != self.gl.FRAMEBUFFER_COMPLETE)
         {
             console.warn('Frame buffrer not complete',stat);
@@ -53,44 +68,15 @@ function RenderBuffer(gl,width,height )
     {
         self.gl.bindFramebuffer(self.gl.FRAMEBUFFER,null);
         self.gl.bindRenderbuffer(self.type,null);
+        self.tx.unbind();
     }
     
-    /*
-     * This function is used to upload the data on the buffer
-     * Should be of tipe Float32Array or UInt16Array etc
-     */
-    /*
-    this.upload = function(data,debug)
+    this.__check_error = function()
     {
-            self.bind();
-            self.gl.bufferData( self.type, 
-                                flatten(data), 
-                                self.gl.STATIC_DRAW );
-            var  error = self.gl.getError();
-            if(error)
-            {
-                console.log("ERROR IN UPLOADING DATA: " + debug);
-            }
-    }
-    */ 
-    /*
-    this.uploadUInt16 = function(data)
-    {
-        //lets flatten it up as array Uint16
-        var idx_size = data.length;
-        var data16 = new Uint16Array(idx_size);
-        for(i=0; i<idx_size;i++)
+        var e = self.gl.getError();
+        if(e != self.gl.NO_ERROR)
         {
-            data16[i] = data[i];
+            console.log("errrorrrrr",e);
         }
-        self.bind();
-        self.gl.bufferData( self.type, 
-                            data16, 
-                            self.gl.STATIC_DRAW );
-        if(self.gl.getError())
-        {
-            console.log("ERROR IN UPLOADING DATA: " + self.type);
-        } 
-        
-    }*/
+    }    
 }
