@@ -7,7 +7,7 @@ function Camera(width, height)
     
     //those two should be constant, probalby I shoudl have a getter 
     //and no setter for this, but for now I leave it like this
-    this.PAN_SPEED = 0.0005;
+    this.PAN_SPEED = 0.0007;
     this.ZOOM_SPEED = 0.01;
     this.ROTATION_SPEED = 0.4;
     

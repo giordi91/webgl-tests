@@ -1,4 +1,6 @@
-__SHAPES ={ "cube" : Cube};
+__SHAPES ={ "cube" : Cube,
+            "cilinder": Cilinder,
+            "sphere":Sphere};
 
 /*
  * This class is the class in charge of generating primitives, it also takes care 
@@ -8,10 +10,11 @@ __SHAPES ={ "cube" : Cube};
  * @param program: the program used for regular rendering
  * @param selectionProgram: the program used or render the selection frame
  */
-function PrimFactory(gl,program, selectionProgram,camera,width,height)
+function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
 {
     var self = this;
     self.gl = gl;
+    self.ui=ui;
     self.program = program;
     self.selectionProgram= selectionProgram;
     self.color_to_data= {}; 
@@ -19,12 +22,14 @@ function PrimFactory(gl,program, selectionProgram,camera,width,height)
     self.colors={};
     self.width = width;
     self.height = height;
-    console.log(self.width, self.height);
+    self.camera = camera;
+    
     self.bf = new RenderBuffer(self.gl,width,height); 
     self.bf.init();
     self.bf.is_complete();
     self.bf.unbind();
-    self.camera = camera;
+    
+    self.__active_selection = [];
 
     this.__getRandomColor = function () {
         var letters = '0123456789ABCDEF'.split('');
@@ -43,6 +48,18 @@ function PrimFactory(gl,program, selectionProgram,camera,width,height)
                 b: parseInt(result[3], 16)
         } : null;
     }
+    this.__componentToHex =function (c) 
+    {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    this.__rgbToHex = function (r, g, b) 
+    {
+        return ("#" + self.__componentToHex(r) + 
+                      self.__componentToHex(g) + 
+                      self.__componentToHex(b)).toUpperCase();
+    } 
     
     this.generate = function(type,name)
     {
@@ -80,23 +97,37 @@ function PrimFactory(gl,program, selectionProgram,camera,width,height)
     
     this.object_at_pixel = function (x,y)
     {
-        console.log("mmmm lets seee what we got here");
         self.bf.bind();
-        self.bf.tx.bind();
-        self.bf.__check_error();
+        
         self.gl.clear(self.gl.COLOR_BUFFER_BIT);
         self.selectionProgram.use();
         var projM = self.camera.projection_matrix(); 
         var ModelViewM= self.camera.model_view_matrix();
         self.selectionProgram.setMatrix4("MVP", mult(projM,ModelViewM));
+        
         for (v in self.name_to_data)
         {
             self.name_to_data[v].draw(true,self.selectionProgram);
         }
+        
         var color= new Uint8Array(4);
-        console.log(x,self.height-y);
-        self.gl.readPixels(x, self.height-y,1,1,self.gl.RGBA,self.gl.UNSIGNED_BYTE,color); 
-        console.log(color);
+        self.gl.readPixels(x-10, self.height-y+10,1,1,self.gl.RGBA,self.gl.UNSIGNED_BYTE,color); 
+        
+        var hex = self.__rgbToHex(color[0],color[1],color[2]);
+        for (var k in self.__active_selection)
+        {
+            self.__active_selection[k].is_selected = false;
+            self.__active_selection = [];
+        }
+        
+        if (hex in self.color_to_data)
+        {
+            var obj = self.color_to_data[hex];
+            obj.is_selected = true;
+            self.ui.setObjectActive(obj); 
+            self.__active_selection.push(obj);
+        }
+        
         self.bf.unbind();
     }
 }

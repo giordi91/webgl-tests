@@ -13,9 +13,3 @@ function generate_matrix_function(object)
 }
 
 
-function translate_matrix()
-{
-    console.log("hei translate mothafucka");
-    console.log(self.height);
-    //mat = translate();
-}

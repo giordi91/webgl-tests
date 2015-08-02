@@ -1,15 +1,12 @@
-//this class is used to draw a grid on the screen
-
-/*
- * @param size: scalar, how many lines to draw
- * @param step: scalar, the gap between the lines
+/* 
+ *  this class is used to draw a cilinder on the screen
  * @param gl: the initialized gl contest
  * @param program: the program with the shader linked to it
  */
-function Cube(gl,program )
+function Cilinder(gl,program )
 {
     var self = this;
-    self.TYPE = "cube";
+    self.TYPE = "cilinder";
     //by default selection color is black, like the background,means it will 
     //be invisible, the color will be filled in by the factory, no public interface
     //is offered for this
@@ -21,7 +18,7 @@ function Cube(gl,program )
     self.gl = gl;
     
     
-    self.color = vec4(1,0,0,1);
+    self.color = vec4(1,1,0,1);
     //spacial parameters
     self.__model_matrix = mat4();
 
@@ -33,65 +30,44 @@ function Cube(gl,program )
     
     this.init = function()
     {
-        var h_width = self.width.get()/2;
-        var h_height= self.height.get()/2;
-        var h_depth= self.depth.get()/2;
         
         self.data_bar = [];
         self.data=[];
         //base points
-        self.data.push(h_width,-h_height,h_depth);         
-        self.data.push(h_width,-h_height,-h_depth);         
-        self.data.push(-h_width,-h_height,-h_depth);         
+        var vec = [self.radius.get(),0,0]
+        var step = 360.0/self.resolution.get();
+        var tmp1; 
+        var h = self.height.get();
+        var hh = h/2.0;
 
-        self.data.push(h_width, -h_height,h_depth);         
-        self.data.push(-h_width,-h_height,-h_depth);         
-        self.data.push(-h_width,-h_height,h_depth);         
-        
-        //top poings
-        self.data.push(h_width,h_height,h_depth);         
-        self.data.push(h_width,h_height,-h_depth);         
-        self.data.push(-h_width,h_height,-h_depth);         
+        for (var i = 0; i<self.resolution.get();i++)
+        {
+            //base triangle
+            self.data.push(0,-hh,0);         
+            tmp = self.__rotate_2d_xy(vec, step*i);
+            self.data.push(tmp[0], -hh,tmp[2]);         
+            tmp1 = self.__rotate_2d_xy(vec, step*(i+1));
+            self.data.push(tmp1[0], -hh,tmp1[2]);         
+          
+            //sides
+            self.data.push(tmp[0], -hh,tmp[2]);         
+            self.data.push(tmp1[0], -hh,tmp1[2]);         
+            self.data.push(tmp1[0], hh,tmp1[2]);         
+            
+            self.data.push(tmp[0], -hh,tmp[2]);         
+            self.data.push(tmp1[0], hh,tmp1[2]);         
+            self.data.push(tmp[0], hh,tmp[2]);         
 
-        self.data.push(h_width, h_height,h_depth);         
-        self.data.push(-h_width,h_height,-h_depth);         
-        self.data.push(-h_width,h_height,h_depth);         
-        //left face
-         
-        self.data.push(h_width,-h_height,h_depth);         
-        self.data.push(h_width,-h_height,-h_depth);         
-        self.data.push(h_width, h_height,-h_depth);         
-        
-        self.data.push(h_width,-h_height,h_depth);         
-        self.data.push(h_width,h_height,-h_depth);         
-        self.data.push(h_width, h_height,h_depth);         
-        
-        //right face 
-        self.data.push(-h_width,-h_height,h_depth);         
-        self.data.push(-h_width,-h_height,-h_depth);         
-        self.data.push(-h_width, h_height,-h_depth);         
-        
-        self.data.push(-h_width,-h_height,h_depth);         
-        self.data.push(-h_width,h_height,-h_depth);         
-        self.data.push(-h_width, h_height,h_depth);         
 
-        //back face
-        self.data.push(h_width,-h_height,-h_depth);         
-        self.data.push(-h_width,-h_height,-h_depth);         
-        self.data.push(-h_width,h_height,-h_depth);         
 
-        self.data.push(h_width,-h_height,-h_depth);         
-        self.data.push(h_width,h_height,-h_depth);         
-        self.data.push(-h_width,h_height,-h_depth);         
+            //top triangle
+            self.data.push(0,hh,0);         
+            tmp = self.__rotate_2d_xy(vec, step*i);
+            self.data.push(tmp[0],hh ,tmp[2]);         
+            tmp = self.__rotate_2d_xy(vec, step*(i+1));
+            self.data.push(tmp[0], hh,tmp[2]);         
+        }
         
-        //front face
-        self.data.push(h_width,-h_height,h_depth);         
-        self.data.push(-h_width,-h_height,h_depth);         
-        self.data.push(-h_width,h_height,h_depth);         
-
-        self.data.push(h_width,-h_height,h_depth);         
-        self.data.push(h_width,h_height,h_depth);         
-        self.data.push(-h_width,h_height,h_depth);         
         
         //generatinc baricentric fake coordinate for wireframe
         for (var i=0; i<self.data.length/9;i++)
@@ -101,8 +77,16 @@ function Cube(gl,program )
         
         self.buffer.upload(self.data);
         self.buffer_bar.upload(self.data_bar);
-        
     }
+    this.__rotate_2d_xy = function ( vec, angle)
+    {
+        angle = angle * Math.PI /180;
+        var res = [vec[0] * Math.cos(angle) - vec[1] * Math.sin(angle),0,
+            vec[0] * Math.sin(angle) + vec[1] * Math.cos(angle) ];
+        return res;
+
+    } 
+
 
     this.update_position= function()
     {
@@ -211,9 +195,9 @@ function Cube(gl,program )
     generate_transform_attributes(self);
 
     //objects parameters
-    self.width = new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "width",10, self.init);
-    self.height= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "height",10,self.init);
-    self.depth= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "depth",10,self.init);
+    self.radius= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "radius",10, self.init);
+    self.height= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "height",30,self.init);
+    self.resolution= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "resolution",10,self.init);
 }
 
 

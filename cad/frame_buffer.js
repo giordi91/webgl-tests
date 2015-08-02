@@ -13,8 +13,9 @@ function RenderBuffer(gl,width,height )
     self.type = gl.RENDERBUFFER;
     self.width = width;
     self.height = height;
+    
     self.tx = new Texture(self.gl,null,0);
-    self.tx.init2(self.width, self.height);
+    self.tx.init_empty(self.width, self.height);
     
     this.init = function()
     {
@@ -22,14 +23,6 @@ function RenderBuffer(gl,width,height )
         self.bindFrame();
         self.gl.framebufferTexture2D(self.gl.FRAMEBUFFER, self.gl.COLOR_ATTACHMENT0,
                 self.gl.TEXTURE_2D, self.tx.id,0);
-        self.tx.unbind();
-        //self.bindRender();
-        //self.gl.renderbufferStorage(self.type, self.gl.DEPTH_COMPONENT16,
-         //      self.width,self.height); 
-        //self.__check_error(); 
-        //self.gl.framebufferRenderbuffer(self.gl.FRAMEBUFFER, self.gl.DEPTH_ATTACHMENT,
-         //       self.type, self.idRender);
-       // self.__check_error(); 
     }  
 
     /*
@@ -39,7 +32,6 @@ function RenderBuffer(gl,width,height )
     {
         self.tx.bind();
         self.bindFrame();
-        //self.bindRender();
     }
     this.bindFrame = function()
     {
@@ -57,7 +49,7 @@ function RenderBuffer(gl,width,height )
     this.is_complete = function()
     {
         self.bindFrame();
-        //self.bindRender();
+        self.bindRender();  
         var stat = self.gl.checkFramebufferStatus(self.gl.FRAMEBUFFER);
         self.__check_error();
         if (stat != self.gl.FRAMEBUFFER_COMPLETE)
@@ -65,6 +57,7 @@ function RenderBuffer(gl,width,height )
             console.warn('Frame buffrer not complete',stat);
         }
     }
+    
     this.unbind = function()
     {
         self.gl.bindFramebuffer(self.gl.FRAMEBUFFER,null);
@@ -77,7 +70,7 @@ function RenderBuffer(gl,width,height )
         var e = self.gl.getError();
         if(e != self.gl.NO_ERROR)
         {
-            console.log("errrorrrrr",e);
+            console.log("Framebuffer is not complete:",e);
         }
     }    
 }

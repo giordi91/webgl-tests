@@ -1,38 +1,37 @@
 
 
-function Texture(gl, path, textureId)
+function Texture(gl,  textureId)
 {
     var self = this;
     self.gl=gl;
-    self.path = path;
+    self.path = null;
     self.id;
     self.img;
     self.loaded = false;
-    self.textureId = textureId
-    this.init = function ()
+    self.textureId = textureId;
+
+    this.from_file = function (path)
     {
-     self.id= gl.createTexture();
-      if (self.path != null)
-      {
-      self.img = new Image();
-      self.img.onload =  function() {self.__proces_img()};
-      self.img.src = self.path;
-      }
-      else
-      {
-      
-      }
-      }
-    this.init2 = function(width ,height)
+        self.path = path;
+        self.id= gl.createTexture();
+        if (self.path != null)
+        {
+            self.img = new Image();
+            self.img.onload =  function() {self.__proces_img()};
+            self.img.src = self.path;
+        }
+    }
+    this.init_empty = function(width ,height)
     {
         self.id= gl.createTexture();
         self.bind();
+        
         self.gl.texImage2D(self.gl.TEXTURE_2D, 0, self.gl.RGBA, width, height,
                    0, self.gl.RGBA, self.gl.UNSIGNED_BYTE, null);
-        self.gl.generateMipmap(self.gl.TEXTURE_2D);
         self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MAG_FILTER, self.gl.NEAREST);
-        self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.NEAREST_MIPMAP_LINEAR);
-        //self.gl.generateMipmap(self.gl.TEXTURE_2D);
+        self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.NEAREST);
+        self.gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        self.gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         self.unbind();
     
     }
@@ -55,7 +54,6 @@ function Texture(gl, path, textureId)
     this.unbind = function()
     {
         self.gl.bindTexture(self.gl.TEXTURE_2D,null);
-        console.log("deactivating texture");
     }
 
 

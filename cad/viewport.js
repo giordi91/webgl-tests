@@ -29,10 +29,16 @@ window.onload = function init()
     //initializeing the camera
     camera = new Camera(canvas.width, canvas.height);
     
-    factory = new PrimFactory(gl, program, selectionProgram,camera,canvas.width, canvas.height);
+    factory = new PrimFactory(gl, program, selectionProgram,camera,container,canvas.width, canvas.height);
+    //var cil= factory.generate("cilinder","cilinder1");
+    sp= factory.generate("sphere","sphere1");
+    /*
     cube = factory.generate("cube","cube1");
     cube2 = factory.generate("cube", "cube2");
-    container.setObjectActive(cube2);
+    cube2.t.set([0,100,0]);
+    cube2.update_position();
+    */
+    container.setObjectActive(sp);
     
      
     if(typeof window.orientation !== 'undefined')
@@ -45,14 +51,9 @@ window.onload = function init()
        mouse_h = new Mouse(canvas, camera,factory);
        mouse_h.init();
     }
-    
-    
-    
-    
 
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
-    
 
     render();
 };
@@ -76,8 +77,7 @@ function render() {
     //program.setUniform3f("lightPosition", vec3(0,0,0));
     //program.setUniform1f("shiness", 10.0);
     factory.draw();
-    //cube.draw();  
-    //body.draw(); 
+    
     //draw grid 
     programBasic.use(); 
     programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
