@@ -30,10 +30,11 @@ window.onload = function init()
     camera = new Camera(canvas.width, canvas.height);
     
     factory = new PrimFactory(gl, program, selectionProgram,camera,container,canvas.width, canvas.height);
-    //var cil= factory.generate("cilinder","cilinder1");
-    sp= factory.generate("sphere","sphere1");
-    /*
+    var cil= factory.generate("cilinder","cilinder1");
+    var sp= factory.generate("sphere","sphere1");
+    
     cube = factory.generate("cube","cube1");
+    /*
     cube2 = factory.generate("cube", "cube2");
     cube2.t.set([0,100,0]);
     cube2.update_position();

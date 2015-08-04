@@ -3,6 +3,7 @@
  * @param gl: the initialized gl context
  * @param buffer_type: the kind of buffer to use , ex gl.ARRAY_BUFFER
 */
+//TODO add render buffer for z depth
 function RenderBuffer(gl,width,height )
 {
     var self =this;
@@ -23,6 +24,7 @@ function RenderBuffer(gl,width,height )
         self.bindFrame();
         self.gl.framebufferTexture2D(self.gl.FRAMEBUFFER, self.gl.COLOR_ATTACHMENT0,
                 self.gl.TEXTURE_2D, self.tx.id,0);
+
     }  
 
     /*
