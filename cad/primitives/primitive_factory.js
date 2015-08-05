@@ -97,9 +97,9 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
     
     this.object_at_pixel = function (x,y)
     {
-        self.bf.bind();
+        self.bf.bindFrame();
+        self.gl.clear( self.gl.COLOR_BUFFER_BIT | self.gl.DEPTH_BUFFER_BIT );
         
-        self.gl.clear(self.gl.COLOR_BUFFER_BIT);
         self.gl.enable(gl.DEPTH_TEST);
         self.selectionProgram.use();
         var projM = self.camera.projection_matrix(); 

@@ -35,8 +35,6 @@ function FrameBuffer(gl,width,height,z_depth)
             self.gl.renderbufferStorage(self.gl.RENDERBUFFER, self.gl.DEPTH_COMPONENT16, 
                     self.width, self.height);
             self.__check_error();
-            self.idRender.width = width;
-            self.idRender.height= height;
         }
         self.gl.framebufferTexture2D(self.gl.FRAMEBUFFER, self.gl.COLOR_ATTACHMENT0,
                 self.gl.TEXTURE_2D, self.tx.id,0);
