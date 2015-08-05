@@ -24,7 +24,7 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
     self.height = height;
     self.camera = camera;
     
-    self.bf = new RenderBuffer(self.gl,width,height); 
+    self.bf = new FrameBuffer(self.gl,width,height,true); 
     self.bf.init();
     self.bf.is_complete();
     self.bf.unbind();
@@ -100,6 +100,7 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
         self.bf.bind();
         
         self.gl.clear(self.gl.COLOR_BUFFER_BIT);
+        self.gl.enable(gl.DEPTH_TEST);
         self.selectionProgram.use();
         var projM = self.camera.projection_matrix(); 
         var ModelViewM= self.camera.model_view_matrix();
@@ -112,7 +113,7 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
         
         var color= new Uint8Array(4);
         self.gl.readPixels(x-10, self.height-y+10,1,1,self.gl.RGBA,self.gl.UNSIGNED_BYTE,color); 
-        
+        console.log(color); 
         var hex = self.__rgbToHex(color[0],color[1],color[2]);
         for (var k in self.__active_selection)
         {

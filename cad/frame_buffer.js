@@ -1,17 +1,20 @@
 /*
- * this class is a wrapper object around a render buffer
+ * this class is a wrapper object around a frame buffer
  * @param gl: the initialized gl context
  * @param buffer_type: the kind of buffer to use , ex gl.ARRAY_BUFFER
 */
 //TODO add render buffer for z depth
-function RenderBuffer(gl,width,height )
+function FrameBuffer(gl,width,height,z_depth)
 {
     var self =this;
     this.id;
     this.gl = gl;
     self.idFrame = self.gl.createFramebuffer();
-    self.idRender =  self.gl.createRenderbuffer(); 
-    self.type = gl.RENDERBUFFER;
+    self.z_depth = z_depth;
+    if (self.z_depth)
+    {
+        self.idRender =  self.gl.createRenderbuffer(); 
+    }
     self.width = width;
     self.height = height;
     
@@ -22,9 +25,28 @@ function RenderBuffer(gl,width,height )
     {
         self.tx.bind(); 
         self.bindFrame();
+        self.idFrame.width = self.width;
+        self.idFrame.height= self.height;
+        
+        if(self.z_depth)
+        {
+            self.bindRender();
+            self.__check_error();
+            self.gl.renderbufferStorage(self.gl.RENDERBUFFER, self.gl.DEPTH_COMPONENT16, 
+                    self.width, self.height);
+            self.__check_error();
+            self.idRender.width = width;
+            self.idRender.height= height;
+        }
         self.gl.framebufferTexture2D(self.gl.FRAMEBUFFER, self.gl.COLOR_ATTACHMENT0,
                 self.gl.TEXTURE_2D, self.tx.id,0);
 
+        if(self.z_depth)
+        {
+            self.gl.framebufferRenderbuffer(self.gl.FRAMEBUFFER, self.gl.DEPTH_ATTACHMENT,
+                    self.gl.RENDERBUFFER, self.idRender);
+            self.__check_error();
+        }
     }  
 
     /*
@@ -34,24 +56,29 @@ function RenderBuffer(gl,width,height )
     {
         self.tx.bind();
         self.bindFrame();
+        if (self.z_depth)
+        {
+            self.bindRender();
+        }
     }
     this.bindFrame = function()
     {
         self.gl.bindFramebuffer(self.gl.FRAMEBUFFER, self.idFrame);
-        self.idFrame.width = self.width;
-        self.idFrame.height= self.height;
     }
     
     this.bindRender = function()
     {
-        self.gl.bindRenderbuffer(self.type, self.idRender);
+        self.gl.bindRenderbuffer(self.gl.RENDERBUFFER, self.idRender);
         self.__check_error(); 
     }
     
     this.is_complete = function()
     {
         self.bindFrame();
-        self.bindRender();  
+        if (self.z_depth)
+        {
+            self.bindRender();
+        }
         var stat = self.gl.checkFramebufferStatus(self.gl.FRAMEBUFFER);
         self.__check_error();
         if (stat != self.gl.FRAMEBUFFER_COMPLETE)
@@ -62,9 +89,12 @@ function RenderBuffer(gl,width,height )
     
     this.unbind = function()
     {
-        self.gl.bindFramebuffer(self.gl.FRAMEBUFFER,null);
-        self.gl.bindRenderbuffer(self.type,null);
         self.tx.unbind();
+        self.gl.bindFramebuffer(self.gl.FRAMEBUFFER,null);
+        if (self.z_depth)
+        {
+            self.bindRender();
+        }
     }
     
     this.__check_error = function()
