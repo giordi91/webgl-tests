@@ -8,7 +8,7 @@ __WIDGET_MAPPING[AttrDisplay.FLOAT_FIELD3] = FloatFieldArray;
  * THis class is the dynamic ui that will be in charge of creating
  * and deleting the divs used to input data
  */
-function DynamicUi()
+function ChannelBox()
 {
     var self = this;
     self.__container; 
@@ -18,7 +18,7 @@ function DynamicUi()
     {
         //let's create the container using the parentUi style setup in the HTML
         self.__container = document.createElement("div");
-        self.__container.className += "parentUi";
+        self.__container.className += "channelBoxUi";
         document.getElementsByTagName('body')[0].appendChild(self.__container);    
     }
     
@@ -75,4 +75,46 @@ function DynamicUi()
         
     }
 
+}
+
+function CreatorUi(factory)
+{
+    var self = this;
+    self.__container; 
+    self.__buttons = []; 
+    self.__factory = factory;
+    this.init = function()
+    {
+        //let's create the container using the parentUi style setup in the HTML
+        self.__container = document.createElement("div");
+        self.__container.className += "creatorUi";
+        document.getElementsByTagName('body')[0].appendChild(self.__container);    
+        
+        var temp;
+        for (var w in __SHAPES)
+        {
+            /*
+            temp = document.createElement("button");
+            temp.className  += "creatorButton";
+            temp.innerHTML= w;
+            self.__container.appendChild(temp);
+            */
+
+            temp= document.createElement('input');
+            temp.id = w;
+            temp.className  += "creatorButton";
+            temp.type= 'image';
+            pathToFile = 'icons/' + w + '.png';
+            temp.src = pathToFile;
+            temp.factory = self.__factory;
+            temp.onclick = clicked;
+            self.__container.appendChild(temp);
+            self.__buttons.push(temp);
+        } 
+    }
+}
+
+function clicked()
+{
+    this.factory.generate(this.id);
 }

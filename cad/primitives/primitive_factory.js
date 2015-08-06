@@ -68,7 +68,18 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
             console.warn(type, " is not a supported type by the factory");
             return;
         }
-        
+        if (name == undefined)
+        {
+            //generate unique random name
+            var counter = 1;
+            name = type + String(counter);
+            while (name in self.name_to_data)
+            {
+                counter +=1;
+                name = type + String(counter);
+            }
+
+        } 
         var p = new __SHAPES[type](self.gl, self.program);
         p.init();
         var color = self.__getRandomColor(); 
@@ -113,7 +124,6 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
         
         var color= new Uint8Array(4);
         self.gl.readPixels(x-10, self.height-y+10,1,1,self.gl.RGBA,self.gl.UNSIGNED_BYTE,color); 
-        console.log(color); 
         var hex = self.__rgbToHex(color[0],color[1],color[2]);
         for (var k in self.__active_selection)
         {

@@ -22,24 +22,28 @@ window.onload = function init()
     gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
     gl.enable(gl.DEPTH_TEST);
     var ext = gl.getExtension('OES_standard_derivatives'); 
+    
     initializeShaderPrograms(); 
     
-    container = new DynamicUi();
+    container = new ChannelBox();
     container.init(); 
     //initializeing the camera
     camera = new Camera(canvas.width, canvas.height);
+
     
     factory = new PrimFactory(gl, program, selectionProgram,camera,container,canvas.width, canvas.height);
-    var cil= factory.generate("cilinder","cilinder1");
-    var sp= factory.generate("sphere","sphere1");
+    creator = new CreatorUi(factory);
+    creator.init();
+    //var cil= factory.generate("cilinder","cilinder1");
+    //var sp= factory.generate("sphere","sphere1");
     
-    cube = factory.generate("cube","cube1");
+    //cube = factory.generate("cube","cube1");
     /*
     cube2 = factory.generate("cube", "cube2");
     cube2.t.set([0,100,0]);
     cube2.update_position();
     */
-    container.setObjectActive(sp);
+    //container.setObjectActive(sp);
     
      
     if(typeof window.orientation !== 'undefined')
