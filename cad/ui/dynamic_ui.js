@@ -72,17 +72,21 @@ function ChannelBox()
                     attrs[a]); 
             obj.init();
         }
-        
     }
-
 }
 
+/*
+ * This class is the view of the factory class, it catches input from the 
+ * user and creates object in the scene accordingly 
+ * @param factory: the factory object to hook up to
+ */
 function CreatorUi(factory)
 {
     var self = this;
     self.__container; 
     self.__buttons = []; 
     self.__factory = factory;
+    
     this.init = function()
     {
         //let's create the container using the parentUi style setup in the HTML
@@ -93,13 +97,6 @@ function CreatorUi(factory)
         var temp;
         for (var w in __SHAPES)
         {
-            /*
-            temp = document.createElement("button");
-            temp.className  += "creatorButton";
-            temp.innerHTML= w;
-            self.__container.appendChild(temp);
-            */
-
             temp= document.createElement('input');
             temp.id = w;
             temp.className  += "creatorButton";
@@ -107,14 +104,14 @@ function CreatorUi(factory)
             pathToFile = 'icons/' + w + '.png';
             temp.src = pathToFile;
             temp.factory = self.__factory;
-            temp.onclick = clicked;
+            temp.onclick = self.__on_item_click;
             self.__container.appendChild(temp);
             self.__buttons.push(temp);
         } 
     }
-}
 
-function clicked()
-{
-    this.factory.generate(this.id);
+    this.__on_item_click = function ()
+    {
+        this.factory.generate(this.id);
+    }
 }
