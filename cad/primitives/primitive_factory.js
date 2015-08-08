@@ -10,7 +10,7 @@ __SHAPES ={ "cube" : Cube,
  * @param program: the program used for regular rendering
  * @param selectionProgram: the program used or render the selection frame
  */
-function PrimFactory(gl,program, selectionProgram,camera, ui,width,height,prim_ren, sel_ren)
+function PrimFactory(gl, ui,prim_ren, sel_ren)
 {
     var self = this;
     self.gl = gl;

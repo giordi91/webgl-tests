@@ -38,13 +38,9 @@ window.onload = function init()
     basic_ren = new BasicRenderer(gl,programBasic,camera);
     select_ren = new SelectionRenderer(gl,selectionProgram,camera,canvas.width, canvas.height);
     
-    factory = new PrimFactory(gl, program, selectionProgram,camera,
-            container,canvas.width, canvas.height,prim_ren,select_ren);
+    factory = new PrimFactory(gl, container,prim_ren,select_ren);
     creator = new CreatorUi(factory);
     creator.init();
-    factory.generate("cube"); 
-    //var c = new Cube(gl, program);    
-    //c.init();
     
     if(typeof window.orientation !== 'undefined')
     {
@@ -61,8 +57,6 @@ window.onload = function init()
     grid.init();
     basic_ren.register_resource(grid);
 
-    //prim_ren.register_resource(c);
-    
     render();
 };
 
