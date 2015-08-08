@@ -1,15 +1,14 @@
 /*
- * This module implements some "builder functions", for movable objects,
- * this means that for each object that is supposed to be moved it will 
- * add the needed functions and behavior that the whole system needs to have
- * I am using this pattern because I don't want to go down the road of inheritance
- * in JS, is not well supported if not in most modern browser
+ * This class implements a movable behavior means that the class will eb able to move in space,
+ * the way it works is by defining three attributes translate rotate and scale, those attributes
+ * are automatically connected to a callback function that updates the internal matrix that is then used
+ * for rendering
  */
 
 function  MovableObject()
 {
-    //this.update_position.bind(this);
-    //this.model_matrix.bind(this);
+    //here we declare the three attributes, the callback is bindend explicitly to this scope
+    //to avoid loosing scope later down the pipe, basically like defining an anonymous function
     this.t= new AttributeCompound( AttrDisplay.FLOAT_FIELD3, AttrCategory.TRANSFORM, 
                              "Translate",3,[0,0,0],3, this.update_position.bind(this));    
     this.r= new AttributeCompound( AttrDisplay.FLOAT_FIELD3, AttrCategory.TRANSFORM, 

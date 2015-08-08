@@ -8,9 +8,14 @@ function Renderer (gl, program, camera)
     self.registered_resources = [];
     self.camera = camera;
 
-    this.register_resource(resource)
-    {
-        self.register_resource.push(resource);
-    }
+    
+}
+Renderer.prototype.register_resource= function(resource)
+{
+    this.registered_resources.push(resource);
+}
 
+Renderer.prototype.render_resources = function()
+{
+    console.warn("Renderer: base function render_resources not implemented!");
 }

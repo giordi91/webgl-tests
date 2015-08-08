@@ -105,6 +105,7 @@ function Cube(gl,program )
         
     }
 
+    /*
     this.draw = function(selection, selectionProgram)
     {
         if (!selection)
@@ -144,10 +145,10 @@ function Cube(gl,program )
             
             selectionProgram.setUniform4f("color",self.SELECTION_COLOR);
             self.gl.drawArrays( self.gl.TRIANGLES, 0, self.data.length/3 );
-            
         }
     }
-    
+    */
+
     //objects parameters
     self.width = new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "width",10, self.init);
     self.height= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "height",10,self.init);

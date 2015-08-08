@@ -35,8 +35,8 @@ window.onload = function init()
     creator = new CreatorUi(factory);
     creator.init();
      
-    var m = new MovableObject();
     var c = new Cube(gl, program);    
+    c.init();
     
     if(typeof window.orientation !== 'undefined')
     {
@@ -52,7 +52,10 @@ window.onload = function init()
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
 
-    render();
+    var ren = new PrimitiveRenderer(gl, program,camera); 
+    ren.register_resource(c);
+    ren.render_resources();
+    //render();
 };
 
 
@@ -63,23 +66,15 @@ function render() {
     //camera matrix
     program.use();
     var projM = camera.projection_matrix(); 
-    //program.setMatrix4("projM", projM);
     var ModelViewM= camera.model_view_matrix();
-    //program.setMatrix4("ModelViewM", camera.model_view_matrix());
     program.setMatrix4("MVP", mult(projM,ModelViewM));
-    //program.setMatrix3("NormalM", camera.normal_matrix());
-    
-    //set materials attributres, will change in the future
-    
-    //program.setUniform3f("K", vec3(0.6,0.6,0.6));
-    //program.setUniform3f("lightPosition", vec3(0,0,0));
-    //program.setUniform1f("shiness", 10.0);
     factory.draw();
     
     //draw grid 
     programBasic.use(); 
     programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
     grid.draw();
+    
     //requesting next frame
     requestAnimFrame(render);
     //evaluating game inputs
