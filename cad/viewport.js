@@ -34,12 +34,16 @@ window.onload = function init()
     camera = new Camera(canvas.width, canvas.height);
 
     
+    prim_ren= new PrimitiveRenderer(gl, program,camera); 
+    basic_ren = new BasicRenderer(gl,programBasic,camera);
+    select_ren = new SelectionRenderer(gl,selectionProgram,camera);
+    
     factory = new PrimFactory(gl, program, selectionProgram,camera,container,canvas.width, canvas.height);
     creator = new CreatorUi(factory);
     creator.init();
-     
-    var c = new Cube(gl, program);    
-    c.init();
+    factory.generate("cube"); 
+    //var c = new Cube(gl, program);    
+    //c.init();
     
     if(typeof window.orientation !== 'undefined')
     {
@@ -52,17 +56,13 @@ window.onload = function init()
        mouse_h.init();
     }
 
-    grid = new Grid(10,10, gl,programBasic);
+    grid = new Grid(10,10,gl);
     grid.init();
-
-    prim_ren= new PrimitiveRenderer(gl, program,camera); 
-    prim_ren.register_resource(c);
-    prim_ren.render_resources();
-
-    basic_ren = new BasicRenderer(gl,programBasic,camera);
     basic_ren.register_resource(grid);
-    basic_ren.render_resources();
-    //render();
+
+    //prim_ren.register_resource(c);
+    
+    render();
 };
 
 
@@ -71,17 +71,20 @@ function render() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
     
     //camera matrix
+    
     program.use();
     var projM = camera.projection_matrix(); 
     var ModelViewM= camera.model_view_matrix();
     program.setMatrix4("MVP", mult(projM,ModelViewM));
     factory.draw();
-    
+    /* 
     //draw grid 
     programBasic.use(); 
     programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
     grid.draw();
-    
+    */ 
+    prim_ren.render_resources();
+    basic_ren.render_resources();
     //requesting next frame
     requestAnimFrame(render);
     //evaluating game inputs

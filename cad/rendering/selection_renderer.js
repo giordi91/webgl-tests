@@ -1,13 +1,12 @@
 
-
-function PrimitiveRenderer(gl, program, camera)
+function SelectionRenderer(gl, program, camera)
 {
     Renderer.apply(this, arguments);
 }
-PrimitiveRenderer.prototype = Object.create(Renderer.prototype);
-PrimitiveRenderer.prototype.constructor = PrimitiveRenderer;
+SelectionRenderer.prototype = Object.create(Renderer.prototype);
+SelectionRenderer.prototype.constructor = SelectionRenderer;
 
-PrimitiveRenderer.prototype.render_resources = function()
+SelectionRenderer.prototype.render_resources = function()
 {
     var obj;
     this.program.use();

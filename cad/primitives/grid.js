@@ -6,12 +6,11 @@
  * @param gl: the initialized gl contest
  * @param program: the program with the shader linked to it
  */
-function Grid(size,step, gl,program )
+function Grid(size,step, gl)
 {
     var self = this;
     self.size = size;
     self.step = step;
-    self.program = program;
     self.gl = gl;
     self.buffer = new Buffer(gl, gl.ARRAY_BUFFER);
     self.data = []; 
@@ -38,17 +37,5 @@ function Grid(size,step, gl,program )
            self.data.push(self.size*self.step); 
         }
         self.buffer.upload(self.data)
-    }
-
-    this.draw = function()
-    {
-        self.program.use()
-        self.buffer.bind(); 
-        vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
-        self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
-        self.gl.enableVertexAttribArray( vPosition );
-        
-        self.program.setUniform4f("color",self.GRID_COLOR);
-        self.gl.drawArrays( self.gl.LINES, 0, self.data.length/3 );
     }
 }

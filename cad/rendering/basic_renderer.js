@@ -3,7 +3,6 @@
 function BasicRenderer(gl, program, camera)
 {
     Renderer.apply(this, arguments);
-    console.log(this.camera);
 }
 BasicRenderer.prototype = Object.create(Renderer.prototype);
 BasicRenderer.prototype.constructor = BasicRenderer;

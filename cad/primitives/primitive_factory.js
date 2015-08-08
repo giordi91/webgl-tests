@@ -31,36 +31,6 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
     
     self.__active_selection = [];
 
-    this.__getRandomColor = function () {
-        var letters = '0123456789ABCDEF'.split('');
-        var color = '#';
-        for (var i = 0; i < 6; i++ ) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
-    this.__hexToRgb= function (hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-        } : null;
-    }
-    this.__componentToHex =function (c) 
-    {
-        var hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-
-    this.__rgbToHex = function (r, g, b) 
-    {
-        return ("#" + self.__componentToHex(r) + 
-                      self.__componentToHex(g) + 
-                      self.__componentToHex(b)).toUpperCase();
-    } 
-    
     this.generate = function(type,name)
     {
         if (!( type in __SHAPES))
@@ -82,13 +52,13 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
         } 
         var p = new __SHAPES[type](self.gl, self.program);
         p.init();
-        var color = self.__getRandomColor(); 
+        var color = getRandomColor(); 
         
         while ( color in self.colors)
         {
-            color = self.__getRandomColor(); 
+            color = getRandomColor(); 
         } 
-        var rgb = self.__hexToRgb(color);
+        var rgb = hexToRgb(color);
         
         self.colors[color] = true; 
         self.color_to_data[color] = p;
@@ -124,7 +94,7 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
         
         var color= new Uint8Array(4);
         self.gl.readPixels(x-10, self.height-y+10,1,1,self.gl.RGBA,self.gl.UNSIGNED_BYTE,color); 
-        var hex = self.__rgbToHex(color[0],color[1],color[2]);
+        var hex = rgbToHex(color[0],color[1],color[2]);
         for (var k in self.__active_selection)
         {
             self.__active_selection[k].is_selected = false;
