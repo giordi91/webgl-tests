@@ -32,9 +32,6 @@ function Sphere(gl)
     
     this.init = function()
     {
-        
-    
-        
         self.data_bar = [];
         self.data=[];
         

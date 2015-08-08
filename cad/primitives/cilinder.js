@@ -87,8 +87,6 @@ function Cilinder(gl)
 
     } 
 
-
-
     //objects parameters
     self.radius= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "radius",10, self.init);
     self.height= new Attribute( AttrDisplay.FLOAT_SLIDER, AttrCategory.BUILD, "height",30,self.init);
