@@ -34,18 +34,10 @@ window.onload = function init()
     factory = new PrimFactory(gl, program, selectionProgram,camera,container,canvas.width, canvas.height);
     creator = new CreatorUi(factory);
     creator.init();
-    //var cil= factory.generate("cilinder","cilinder1");
-    //var sp= factory.generate("sphere","sphere1");
-    
-    //cube = factory.generate("cube","cube1");
-    /*
-    cube2 = factory.generate("cube", "cube2");
-    cube2.t.set([0,100,0]);
-    cube2.update_position();
-    */
-    //container.setObjectActive(sp);
-    
      
+    var m = new MovableObject();
+    var c = new Cube(gl, program);    
+    
     if(typeof window.orientation !== 'undefined')
     {
         touch_h = new Touch(canvas, camera);
