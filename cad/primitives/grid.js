@@ -15,7 +15,7 @@ function Grid(size,step, gl,program )
     self.gl = gl;
     self.buffer = new Buffer(gl, gl.ARRAY_BUFFER);
     self.data = []; 
-    self.GRID_COLOR = vec4(0.3,0.5,0.3,1);
+    self.color= vec4(0.3,0.5,0.3,1);
 
     this.init = function()
     {

@@ -13,6 +13,9 @@ var grid;
 var cube;
 var container;
 
+var basic_ren;
+var prim_ren;
+
 window.onload = function init()
 {
     gl = WebGLUtils.setupWebGL( canvas  );
@@ -52,9 +55,13 @@ window.onload = function init()
     grid = new Grid(10,10, gl,programBasic);
     grid.init();
 
-    var ren = new PrimitiveRenderer(gl, program,camera); 
-    ren.register_resource(c);
-    ren.render_resources();
+    prim_ren= new PrimitiveRenderer(gl, program,camera); 
+    prim_ren.register_resource(c);
+    prim_ren.render_resources();
+
+    basic_ren = new BasicRenderer(gl,programBasic,camera);
+    basic_ren.register_resource(grid);
+    basic_ren.render_resources();
     //render();
 };
 

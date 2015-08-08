@@ -18,9 +18,7 @@ PrimitiveRenderer.prototype.render_resources = function()
     for (var r in this.registered_resources)
     {
         obj = this.registered_resources[r];
-        console.log(obj); 
-        this.program.use()
-            this.program.setMatrix4("modelM",obj.__model_matrix);
+        this.program.setMatrix4("modelM",obj.__model_matrix);
 
         obj.buffer.bind(); 
         vPosition = this.gl.getAttribLocation( this.program.get(), "vPosition" );
