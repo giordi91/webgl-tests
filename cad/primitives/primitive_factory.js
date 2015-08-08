@@ -10,24 +10,19 @@ __SHAPES ={ "cube" : Cube,
  * @param program: the program used for regular rendering
  * @param selectionProgram: the program used or render the selection frame
  */
-function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
+function PrimFactory(gl,program, selectionProgram,camera, ui,width,height,prim_ren, sel_ren)
 {
     var self = this;
     self.gl = gl;
     self.ui=ui;
     self.program = program;
-    self.selectionProgram= selectionProgram;
+    
     self.color_to_data= {}; 
     self.name_to_data = {}; 
     self.colors={};
-    self.width = width;
-    self.height = height;
-    self.camera = camera;
+    self.prim_ren = prim_ren;
+    self.sel_ren = sel_ren;
     
-    self.bf = new FrameBuffer(self.gl,width,height,true); 
-    self.bf.init();
-    self.bf.is_complete();
-    self.bf.unbind();
     
     self.__active_selection = [];
 
@@ -50,7 +45,7 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
             }
 
         } 
-        var p = new __SHAPES[type](self.gl, self.program);
+        var p = new __SHAPES[type](self.gl );
         p.init();
         var color = getRandomColor(); 
         
@@ -64,43 +59,24 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
         self.color_to_data[color] = p;
         self.name_to_data[name] = p;
         p.SELECTION_COLOR = [rgb.r/255.0,rgb.g/255.0,rgb.b/255.0,1.0]; 
-        return p;
         
-    }
+        self.sel_ren.register_resource(p);
+        self.prim_ren.register_resource(p);
+        return p;
 
-    this.draw = function()
-    {
-        for (v in self.name_to_data)
-        {
-            self.name_to_data[v].draw(false);
-        }
+
+        
     }
     
     this.object_at_pixel = function (x,y)
     {
-        self.bf.bindFrame();
-        self.gl.clear( self.gl.COLOR_BUFFER_BIT | self.gl.DEPTH_BUFFER_BIT );
-        
-        self.gl.enable(gl.DEPTH_TEST);
-        self.selectionProgram.use();
-        var projM = self.camera.projection_matrix(); 
-        var ModelViewM= self.camera.model_view_matrix();
-        self.selectionProgram.setMatrix4("MVP", mult(projM,ModelViewM));
-        
-        for (v in self.name_to_data)
-        {
-            self.name_to_data[v].draw(true,self.selectionProgram);
-        }
-        
-        var color= new Uint8Array(4);
-        self.gl.readPixels(x-10, self.height-y+10,1,1,self.gl.RGBA,self.gl.UNSIGNED_BYTE,color); 
+        var color = self.sel_ren.hex_color_at_pixel(x,y);
         var hex = rgbToHex(color[0],color[1],color[2]);
         for (var k in self.__active_selection)
         {
             self.__active_selection[k].is_selected = false;
             self.__active_selection = [];
         }
-        
         if (hex in self.color_to_data)
         {
             var obj = self.color_to_data[hex];
@@ -109,7 +85,6 @@ function PrimFactory(gl,program, selectionProgram,camera, ui,width,height)
             self.__active_selection.push(obj);
         }
         
-        self.bf.unbind();
     }
 }
 

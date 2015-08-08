@@ -36,7 +36,7 @@ PrimitiveRenderer.prototype.render_resources = function()
         }
         else
         {
-            obj.program.setUniform4f("wire_color",[0,0.0,0,1]);
+            this.program.setUniform4f("wire_color",[0,0.0,0,1]);
         }
         this.gl.drawArrays( this.gl.TRIANGLES, 0, obj.data.length/3 );
 

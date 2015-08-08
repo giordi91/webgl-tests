@@ -79,8 +79,9 @@ function get_attributes(obj, category)
         }
         //short hand for the attribute 
         attr = obj[keys[k]]; 
+
         
-        if ((attr.is_attribute != undefined)  && attr.is_attribute)
+        if ((attr != undefined) && (attr.is_attribute != undefined)  && attr.is_attribute)
         {
             if (category== undefined)
             {

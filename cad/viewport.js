@@ -36,9 +36,10 @@ window.onload = function init()
     
     prim_ren= new PrimitiveRenderer(gl, program,camera); 
     basic_ren = new BasicRenderer(gl,programBasic,camera);
-    select_ren = new SelectionRenderer(gl,selectionProgram,camera);
+    select_ren = new SelectionRenderer(gl,selectionProgram,camera,canvas.width, canvas.height);
     
-    factory = new PrimFactory(gl, program, selectionProgram,camera,container,canvas.width, canvas.height);
+    factory = new PrimFactory(gl, program, selectionProgram,camera,
+            container,canvas.width, canvas.height,prim_ren,select_ren);
     creator = new CreatorUi(factory);
     creator.init();
     factory.generate("cube"); 
@@ -72,17 +73,6 @@ function render() {
     
     //camera matrix
     
-    program.use();
-    var projM = camera.projection_matrix(); 
-    var ModelViewM= camera.model_view_matrix();
-    program.setMatrix4("MVP", mult(projM,ModelViewM));
-    factory.draw();
-    /* 
-    //draw grid 
-    programBasic.use(); 
-    programBasic.setMatrix4("MVP", mult(projM,ModelViewM));
-    grid.draw();
-    */ 
     prim_ren.render_resources();
     basic_ren.render_resources();
     //requesting next frame

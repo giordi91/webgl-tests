@@ -6,7 +6,7 @@
  * @param gl: the initialized gl contest
  * @param program: the program with the shader linked to it
  */
-function Cube(gl,program )
+function Cube(gl )
 {
     MovableObject.apply(this);
     var self = this;
@@ -18,7 +18,6 @@ function Cube(gl,program )
     self.SELECTED_WIREFRAME_COLOR = [1,1,1,0];
     self.is_selected = false;
     //webgl components
-    self.program = program;
     self.gl = gl;
     
     
@@ -103,49 +102,6 @@ function Cube(gl,program )
         self.buffer.upload(self.data);
         self.buffer_bar.upload(self.data_bar);
         
-    }
-
-
-    this.draw = function(selection, selectionProgram)
-    {
-        if (!selection)
-        {
-            self.program.use()
-            self.program.setMatrix4("modelM",self.__model_matrix);
-            self.buffer.bind(); 
-            vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
-            self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
-            self.gl.enableVertexAttribArray( vPosition );
-            
-             
-            self.buffer_bar.bind(); 
-            vBC = self.gl.getAttribLocation( self.program.get(), "vBC" );
-            self.gl.vertexAttribPointer( vBC, 3, self.gl.FLOAT, false, 0, 0 );
-            self.gl.enableVertexAttribArray( vBC);
-            
-
-            self.program.setUniform4f("color",self.color);
-            if(self.is_selected)
-            {
-                self.program.setUniform4f("wire_color",self.SELECTED_WIREFRAME_COLOR);
-            }
-            else
-            {
-                self.program.setUniform4f("wire_color",[0,0,0,1]);
-            }
-            self.gl.drawArrays( self.gl.TRIANGLES, 0, self.data.length/3 );
-        }
-        else
-        {
-            selectionProgram.setMatrix4("modelM",self.__model_matrix);
-            self.buffer.bind(); 
-            vPosition = self.gl.getAttribLocation( self.program.get(), "vPosition" );
-            self.gl.vertexAttribPointer( vPosition, 3, self.gl.FLOAT, false, 0, 0 );
-            self.gl.enableVertexAttribArray( vPosition );
-            
-            selectionProgram.setUniform4f("color",self.SELECTION_COLOR);
-            self.gl.drawArrays( self.gl.TRIANGLES, 0, self.data.length/3 );
-        }
     }
     
     //objects parameters
