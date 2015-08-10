@@ -1,5 +1,6 @@
 __SHAPES ={ "cube" : Cube,
             "cilinder": Cilinder,
+            "cone": Cone,
             "sphere":Sphere};
 
 /*
