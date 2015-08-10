@@ -46,6 +46,7 @@ window.onload = function init()
     {
         touch_h = new Touch(canvas, camera);
         touch_h.init();
+
     }    
     else
     {
@@ -57,7 +58,20 @@ window.onload = function init()
     grid.init();
     basic_ren.register_resource(grid);
 
+    // ugly toooltip it s temporary, i don't care much about HTML/CSS stuff sorry :D
+    var coup = document.createElement('div');
+    coup.className += 'couponcode'
+    coup.innerHTML = "Controls";
+
+    var tool = document.createElement('div');
+    tool.className += 'coupontooltip';
+    tool.innerHTML = "Camera: all mouse buttons works on drag: <br>---> left button: rotate <br> ---> right button: zoom <br> ---> middle button: pan <br> Selection: left mouse click</br> </br> </br> </br> ";
+
+    coup.appendChild(tool);
+    document.body.appendChild(coup);
     render();
+
+
 };
 
 

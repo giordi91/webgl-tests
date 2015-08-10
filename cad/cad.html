@@ -29,6 +29,33 @@ canvas{background:url("textures/bg3.jpg");background-size:   cover; }
     overflow: auto;
     
 }
+.couponcode:hover .coupontooltip {
+    display: block;
+}
+.couponcode{
+    float: left !important;
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    border: 1px solid #000000;
+    padding: 4px 4px 4px 4px;
+    color: #ffffff;
+    margin: 10px;
+    
+}
+
+
+.coupontooltip {
+    display: none;
+    color: #000000;
+    background: #C8C8C8;
+    margin-left: 10px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+    width:200px;
+    height:100px;
+}
 
 .creatorButton{
     width: 55px;
@@ -72,7 +99,6 @@ canvas{background:url("textures/bg3.jpg");background-size:   cover; }
 <script type="text/javascript" src="mesh.js"></script>
 <script type="text/javascript" src="viewport.js"></script>
 </head>
-
 <body >
   
 </style>
