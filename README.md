@@ -5,10 +5,12 @@ For now there is a branch for each test.
 The main tests are:
 3D viewport:
 http://www.marcogiordanotd.com/webgl/viewport/viewport.html
-A 3d viewport with support for color and normal map texturs.
+
+A 3d viewport with support for color and normal map textures.
 
 2D drawing:
 http://www.marcogiordanotd.com/webgl/drawing/drawing.html
+
 A simple 2D drawing test.
 
 There is still crap around of simpler tests like triangles helloworld etc that will be cleaned up at one point.
